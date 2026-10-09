@@ -1,4 +1,4 @@
-// Настройки, достижения, коллекция, о игре.
+// Настройки, достижения, коллекция, «Об игре».
 import { h, icon, toast } from './dom.js';
 import { A } from './app.js';
 import { audio } from '../audio/audio.js';
@@ -41,6 +41,20 @@ export function openCollection() {
     grid.appendChild(h('div', { class: 'card find rarity-' + f.rarity, style: { margin: 0 } }, h('div', { class: 'em' }, n ? f.emoji : '❔'), h('b', { style: { fontSize: '.78em' } }, n ? f.name : '???'), h('div', { class: 'muted', style: { fontSize: '.7em' } }, n ? (n > 1 ? '×' + n : '') : f.rarity === 'epic' ? 'эпическая' : f.rarity === 'rare' ? 'редкая' : '')));
   }
   sheet(`Находки ${Object.keys(s.finds).length}/${FINDS.length}`, grid);
+}
+
+export function openHowTo() {
+  const step = (ic, title, text) => h('div', { class: 'card row', style: { alignItems: 'flex-start' } }, h('div', { class: 'badgebox', style: { width: '44px', height: '44px', borderRadius: '14px', display: 'grid', placeItems: 'center', background: 'var(--paper2)', flex: 'none' } }, icon(ic)), h('div', null, h('b', null, title), h('div', { class: 'muted' }, text)));
+  sheet('Как играть', [
+    step('orders', '1. Возьми заказ', 'Сюжетные заказы района и доска с подработками. Перед заказом видно грязь, время и оплату.'),
+    step('shop', '2. Подготовь набор', 'Инструменты остаются у тебя навсегда. Средства, воду и фильтры докупаешь перед заказом, остатки сохраняются. «Автоподбор» всё сделает за тебя.'),
+    step('vacuum', '3. Пылесос', 'Сначала убери сухое: пыль, шерсть, песок. Мокрое под пылесосом не поддаётся, а по сырому он буксует.'),
+    step('spray', '4. Средство', 'Нанеси пену и подожди: она окрасится, когда начнёт работать. Разным видам грязи нужны разные средства: энзим для пятен, обезжириватель для жира.'),
+    step('rinse', '5. Смыв', 'Вода или пар смывают разрыхлённую грязь. Задержи палец на месте, и напор вырастет. Если смыть по сухой пыли, она станет грязью.'),
+    step('clock', '6. Время и звёзды', 'Нужно отмыть хотя бы 70% до конца таймера. Три звезды дают 98% чистоты. Не успел: можно взять ещё 25 секунд за репутацию.'),
+    step('tilt', '7. Наклон и встряска', 'Наклон гонит пену и воду, встряска разрыхляет. Те же действия есть кнопками на экране мойки.'),
+    step('heart', '8. Лента и районы', 'Красивые посты растят подписчиков. Подписчики и закрытые заказы района открывают следующий район.'),
+  ]);
 }
 
 export function openAbout() {

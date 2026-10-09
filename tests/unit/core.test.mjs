@@ -157,3 +157,33 @@ test('NaN в остатках не портит склад', () => {
   ST.applyResult(s, storyOrders(1)[0], { clean: 99, leftFrac: 0.3, finds: [], leftover: { products: { p_soap: NaN }, water: NaN, steam: NaN } }, []);
   assert.equal(s.inventory.products.p_soap, 0); assert.equal(s.inventory.water, 0);
 });
+
+import { MODS, VACUUMS, APPLICATORS, RINSERS } from '../../game/js/data/gear.js';
+
+test('цели достижений достижимы', () => {
+  const cap = { mods: MODS.length, owned: VACUUMS.length + APPLICATORS.length + RINSERS.length, decor: TEXTS.decor.length, finds: FINDS.length, seasons: 10 };
+  for (const a of ACH) if (cap[a.check] !== undefined) assert.ok(a.goal <= cap[a.check], `${a.id}: цель ${a.goal} > ${cap[a.check]}`);
+});
+
+test('серия без спасений растёт только за успешные заказы', () => {
+  const s = ST.createState(); ST.ensureBoard(s);
+  const o = storyOrders(1)[0];
+  for (let i = 0; i < 5; i++) ST.applyResult(s, o, { clean: 0, leftFrac: 0, finds: [] }, []);
+  assert.equal(s.stats.noRescueStreak, 0);
+  ST.applyResult(s, o, { clean: 99, leftFrac: 0.5, finds: [] }, []);
+  assert.equal(s.stats.noRescueStreak, 1);
+  ST.applyResult(s, o, { clean: 99, leftFrac: 0.5, finds: [], rescued: true }, []);
+  assert.equal(s.stats.noRescueStreak, 0);
+});
+
+test('репутация за спасение списывается при итогах, не раньше', () => {
+  const s = ST.createState(); ST.ensureBoard(s); s.rep = 5;
+  ST.applyResult(s, storyOrders(1)[0], { clean: 0, leftFrac: 0, finds: [], repSpent: 2, rescued: true }, []);
+  assert.equal(s.rep, 3);
+});
+
+test('режим поддержки не засчитывает провалы как успех в счётчике заказов', () => {
+  const s = ST.createState(); ST.ensureBoard(s);
+  ST.applyResult(s, storyOrders(1)[0], { clean: 0, leftFrac: 0, finds: [] }, []);
+  assert.equal(s.stats.jobs, 0); assert.equal(s.stats.attempts, 1);
+});

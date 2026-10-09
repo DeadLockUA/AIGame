@@ -16,7 +16,7 @@ import { caps, unitPrice, productAvailable, filterAvailable, toolUnlockSeason, m
 import { fmt } from '../util.js';
 import { openPrep } from './prep.js';
 import { postCard } from './feed.js';
-import { openSettings, openAchievements, openCollection, openAbout } from './more.js';
+import { openSettings, openAchievements, openCollection, openAbout, openHowTo } from './more.js';
 import { showSeasonStory } from './story.js';
 
 const BANNERS = [
@@ -115,6 +115,11 @@ function tabOrders() {
   if (sid !== state.season) {
     body.appendChild(h('div', { class: 'card row sb' }, h('span', { class: 'muted' }, 'Ты смотришь другой район.'), h('button', { class: 'btn sm teal', onClick: () => { ST.enterSeason(state, sid); A.save(); viewSeason = sid; renderBody(); } }, 'Работать здесь')));
   }
+  const newDirt = sid >= 2 && sid <= 5 ? [['sand', 'grease'], ['stain'], ['deep'], ['mold']][sid - 2] : null;
+  const newGear = { 2: 'В магазине новые инструменты.', 3: 'В магазине открылись насадки и роторная щётка.', 5: 'Теперь доступны паровой «Дракон», туманник и промышленный пылесос (нужна репутация).' }[sid];
+  if (newDirt) {
+    body.appendChild(h('div', { class: 'card', style: { background: '#fff4d6' } }, h('b', null, 'Новое в районе'), h('div', { class: 'chips', style: { margin: '6px 0' } }, newDirt.map((t) => h('span', { class: 'chip' }, dirtDot(t), dirtName(t)))), h('div', { class: 'muted' }, newDirt.map((t) => `${dirtName(t)}: ${DIRT.find((d) => d.id === t).hint.toLowerCase()}.`).join(' ') + (newGear ? ' ' + newGear : ''))));
+  }
   body.appendChild(h('div', { class: 'card' }, h('div', { class: 'row sb' }, h('b', null, 'Заказы района'), h('b', null, `${doneN} / 6`)), h('div', { class: 'bar', style: { marginTop: '6px' } }, h('i', { style: { width: (doneN / 6) * 100 + '%' } })), h('div', { class: 'muted', style: { marginTop: '6px' } }, season.blurb)));
 
   // переход в следующий район
@@ -127,7 +132,7 @@ function tabOrders() {
       } else {
         body.appendChild(h('div', { class: 'card' }, h('div', { class: 'row sb' }, h('b', null, 'До следующего района'), h('span', { class: 'price' }, icon('heart'), `${fmt(state.followers)} / ${fmt(need)}`)),
           h('div', { class: 'bar', style: { marginTop: '6px' } }, h('i', { style: { width: Math.min(100, (state.followers / need) * 100) + '%' } })),
-          h('div', { class: 'muted', style: { marginTop: '6px' } }, 'Подписчики приходят за красивые посты. Бери заказы с доски: от них растёт лента.')));
+          h('div', { class: 'muted', style: { marginTop: '6px' } }, 'Подписчики приходят за красивыми постами. Бери заказы с доски: от них растёт лента.')));
       }
     } else if (state.followers < need) {
       body.appendChild(h('div', { class: 'card muted' }, `Чтобы открыть «${SEASONS[sid].name}», нужны ${fmt(need)} подписчиков и все заказы района (сейчас ${fmt(state.followers)}).`));
@@ -136,7 +141,7 @@ function tabOrders() {
   body.appendChild(h('div', { class: 'h2' }, 'Заказы района', h('small', null, 'сюжетные')));
   orders.forEach((o, i) => { const c = orderCard(o, state); if (i === 0 && !(state.stats.attempts > 0) && sid === 1) c.classList.add('pulse'); body.appendChild(c); });
   if (sid === state.season) {
-    body.appendChild(h('div', { class: 'h2' }, 'Доска заказов', h('small', null, `${boardSlots(state)} места`)));
+    body.appendChild(h('div', { class: 'h2' }, 'Доска заказов', h('small', null, `мест: ${boardSlots(state)}`)));
     if (!state.board.side.length) ST.ensureBoard(state);
     state.board.side.forEach((o) => body.appendChild(orderCard(o, state)));
     body.appendChild(h('div', { class: 'muted', style: { textAlign: 'center', margin: '8px' } }, 'Выполненный заказ заменяется новым. Побочные заказы приносят деньги и подписчиков.'));
@@ -169,7 +174,7 @@ function toolCard(t, phase) {
     h('div', { style: { textAlign: 'right' } },
       owned ? (eq ? h('span', { class: 'chip good' }, 'Надето') : h('button', { class: 'btn sm teal', onClick: () => { ST.equipTool(state, t.id); audio.ui('tick'); A.save(); renderBody(); } }, 'Надеть'))
         : locked ? h('span', { class: 'chip' }, `Район ${lockS}`)
-          : h('div', null, priceTag(t.price, t.rep), check.ok ? null : h('div', { class: 'muted', style: { fontSize: '.72em' } }, check.why), h('div', { style: { height: '4px' } }), h('button', { class: 'btn sm gold' + (check.ok ? '' : ' disabled'), onClick: () => { const r = ST.buyTool(state, t.id); if (r.ok) { audio.ui('buy'); haptics.event('buy'); toast('Куплено: ' + t.name, 'good'); A.save(); renderBody(); } else { audio.ui('error'); toast(r.why, 'bad'); } } }, 'Купить'))));
+          : h('div', null, priceTag(t.price, t.rep), check.ok ? null : h('div', { class: 'muted', style: { fontSize: '.72em' } }, check.why), h('div', { style: { height: '4px' } }), h('button', { class: 'btn sm gold' + (check.ok ? '' : ' disabled'), onClick: () => { const r = ST.buyTool(state, t.id); if (r.ok) { audio.ui('buy'); haptics.event('buy'); toast('Куплено: ' + t.name + (Object.values(state.equipped).includes(t.id) ? '' : '. Надень в наборе.'), 'good'); A.save(); renderBody(); } else { audio.ui('error'); toast(r.why, 'bad'); } } }, 'Купить'))));
   return card;
 }
 function consRow(kind, id, name, desc, color) {
@@ -196,14 +201,14 @@ function tabShop() {
       list.forEach((t) => body.appendChild(toolCard(t, ph)));
     }
   } else if (shopTab === 'mods') {
-    body.appendChild(h('div', { class: 'muted' }, `Насадки вставляются в слоты инструментов: ${modSlots(state)} на инструмент.` + (modsAvailable(state) ? '' : ' Откроются в районе №3.')));
+    body.appendChild(h('div', { class: 'muted' }, `Насадки вставляются в слоты: ${modSlots(state)} на каждый тип инструмента (пылесос, средство, смыв). Лишняя вытесняет прежнюю.` + (modsAvailable(state) ? '' : ' Откроются в районе №3.')));
     for (const slot of ['vacuum', 'applicator', 'rinse']) {
       body.appendChild(h('div', { class: 'h2' }, { vacuum: 'Пылесос', applicator: 'Средство', rinse: 'Смыв' }[slot]));
       MODS.filter((m) => m.slot === slot).forEach((m) => {
         const owned = state.owned.mods.includes(m.id), eq = state.equipped.mods[slot].includes(m.id);
         const chk = ST.canBuyMod(state, m.id);
         body.appendChild(h('div', { class: 'card tool' + (eq ? ' equipped' : '') },
-          h('div', { class: 'badgebox' }, icon('gear')), h('div', { class: 'grow' }, h('b', null, m.name), h('div', { class: 'muted' }, m.desc)),
+          h('div', { class: 'badgebox' }, icon(slot === 'vacuum' ? 'vacuum' : slot === 'applicator' ? 'spray' : 'rinse')), h('div', { class: 'grow' }, h('b', null, m.name), h('div', { class: 'muted' }, m.desc)),
           owned ? (eq ? h('button', { class: 'btn sm ghost', onClick: () => { ST.unequipMod(state, m.id); A.save(); renderBody(); } }, 'Снять') : h('button', { class: 'btn sm teal', onClick: () => { ST.equipMod(state, m.id); audio.ui('tick'); A.save(); renderBody(); } }, 'Надеть'))
             : h('div', { style: { textAlign: 'right' } }, priceTag(m.price, m.rep), chk.ok ? null : h('div', { class: 'muted', style: { fontSize: '.72em' } }, chk.why), h('div', { style: { height: '4px' } }), h('button', { class: 'btn sm gold' + (chk.ok ? '' : ' disabled'), onClick: () => { const r = ST.buyMod(state, m.id); if (r.ok) { audio.ui('buy'); toast('Куплено: ' + m.name, 'good'); A.save(); renderBody(); } else toast(r.why, 'bad'); } }, 'Купить'))));
       });
@@ -215,8 +220,8 @@ function tabShop() {
     body.appendChild(h('div', { class: 'h2' }, 'Фильтры'));
     FILTERS.filter((f) => filterAvailable(state, f)).forEach((f) => body.appendChild(consRow('filter', f.id, f.name, f.desc, '#c9bba3')));
     body.appendChild(h('div', { class: 'h2' }, 'Вода и пар'));
-    body.appendChild(consRow('water', 'water', 'Вода', 'Нужна лейке, шлангу и душу.', '#6bb6e6'));
-    body.appendChild(consRow('steam', 'steam', 'Пар', 'Для парового очистителя.', '#e8eef3'));
+    body.appendChild(consRow('water', 'water', 'Вода', 'Нужна всем, кроме парового «Дракона».', '#6bb6e6'));
+    body.appendChild(consRow('steam', 'steam', 'Пар', 'Для парового «Дракона».', '#e8eef3'));
   }
 }
 
@@ -224,6 +229,8 @@ function tabShop() {
 function tabWorkshop() {
   const state = A.state;
   body.appendChild(h('div', { class: 'h2' }, 'Мастерская'));
+  const owned = TEXTS.decor.filter((d) => state.owned.decor.includes(d.id));
+  body.appendChild(h('div', { class: 'card shelf' }, h('div', { class: 'shelfrow' }, icon('cat', 'big'), owned.length ? owned.map((d) => h('span', { class: 'deco', title: d.name }, d.emoji)) : h('span', { class: 'muted' }, 'Пока голые стены. Купи декор ниже: кот оценит, подписчики тоже.'))));
   WORKSHOP.forEach((w) => {
     const l = lvl(state, w.id), c = ST.upgradeCost(state, w.id);
     body.appendChild(h('div', { class: 'card' }, h('div', { class: 'row' },
@@ -273,10 +280,11 @@ function tabMore() {
   const done = Object.keys(state.achievements).length;
   const row = (ic, title, sub, fn) => h('div', { class: 'card tap row', onClick: () => { audio.ui('open'); fn(); } }, h('div', { class: 'badgebox', style: { width: '44px', height: '44px', borderRadius: '14px', display: 'grid', placeItems: 'center', background: 'var(--paper2)' } }, icon(ic)), h('div', { class: 'grow' }, h('b', null, title), h('div', { class: 'muted' }, sub)), icon('arrow'));
   body.appendChild(h('div', { class: 'h2' }, 'Ещё'));
+  body.appendChild(row('info', 'Как играть', 'Коротко о фазах мойки, звёздах и наклоне', openHowTo));
   body.appendChild(row('trophy', 'Достижения', `${done} из ${ACH.length}`, openAchievements));
   body.appendChild(row('find', 'Коллекция находок', `${Object.keys(state.finds).length} из ${FINDS.length}`, openCollection));
   body.appendChild(row('gear', 'Настройки', 'Звук, вибро, датчики, сохранение', openSettings));
-  body.appendChild(row('info', 'О игре', 'Совет деда Ефима и немного лора', openAbout));
+  body.appendChild(row('info', 'О игре', 'Совет деда Ефима и немного предыстории', openAbout));
   const tip = TEXTS.tips[(state.stats.jobs + 3) % TEXTS.tips.length];
   body.appendChild(h('div', { class: 'card quote' }, icon('cat', 'big'), h('div', null, h('b', null, 'Ворсик говорит:'), h('div', null, tip))));
 }

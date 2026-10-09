@@ -161,7 +161,7 @@ export function runWash({ state, order, challenges = [], root, onQuit }) {
       scanEl.replaceChildren();
       DIRT.forEach((d, t) => {
         if (!eng.initialDirtTypes[t] || eng.initialDirtTypes[t] < 3) return;
-        const chip = h('span', { class: 'chip', data: { t } }, h('i', { style: { background: `rgb(${d.color.join(',')})` } }), d.name + ' ', h('b', null, '100%'));
+        const chip = h('span', { class: 'chip', data: { t } }, h('i', { style: { background: `rgb(${d.color.join(',')})` } }), (d.short || d.name) + ' ', h('b', null, '100%'));
         scanEl.appendChild(chip);
       });
     }
@@ -193,8 +193,7 @@ export function runWash({ state, order, challenges = [], root, onQuit }) {
       return [cx, cy];
     }
     function toGridPos(cx, cy) {
-      let [gx, gy] = view.toGrid(cx, cy);
-      if (qid('sway')) gx -= view.sway(tAll);
+      let [gx, gy] = view.fromScreen(cx, cy, tAll);
       if (qid('mirror')) gx = GW - gx;
       return [gx, gy];
     }
@@ -209,13 +208,13 @@ export function runWash({ state, order, challenges = [], root, onQuit }) {
       // сбор находки
       for (const f of eng.finds) {
         if (!f.revealed || f.collected) continue;
-        const off = qid('sway') ? view.sway(tAll) / GW * CW * view.sx : 0;
-        if (Math.hypot(view.gx(f.x) + off - cx, view.gy(f.y) - cy) < 40 * dpr) { collectFind(f, cx, cy); return; }
+        const [fx, fy] = view.toScreen(f.x, f.y, tAll);
+        if (Math.hypot(fx - cx, fy - cy) < 40 * dpr) { collectFind(f, cx, cy); return; }
       }
       down = true; started = true;
       [px, py] = toGridPos(cx, cy);
       ex = prevEx = px; ey = prevEy = py; held = 0; speed = 0;
-      view.cursor = { x: cx, y: cy, r: curRadius() * view.sx * (CW / GW), down: true };
+      view.cursor = { x: cx, y: cy, r: curRadius() * view.sx * (CW / GW) * view.zoom, down: true };
       view._cx = cx; view._cy = cy;
     });
     canvas.addEventListener('pointermove', (e) => {
@@ -286,7 +285,7 @@ export function runWash({ state, order, challenges = [], root, onQuit }) {
         abandoned, clean: eng.cleanPct, leftFrac: eng.timeLeft / eng.limit, rescued, rescues,
         finds: [...collected, ...auto], timeSec: eng.time, usedVacuum: eng.stats.strokes.vacuum > 1.5,
         leftover: left, filterUsed: eng.vac && kit._filterId && eng.filterLoad > 0.5 ? kit._filterId : null,
-        appeal: (eng.app.appeal || 0) + (eng.rin.appeal || 0) + (eng.vac.appeal || 0), before, after: afterSnap, limit: eng.limit,
+        appeal: (eng.app.appeal || 0) + (eng.rin.appeal || 0) + (eng.vac.appeal || 0), before, after: afterSnap, limit: eng.limit, repSpent,
       });
     }
     function timeUp() {
@@ -301,12 +300,13 @@ export function runWash({ state, order, challenges = [], root, onQuit }) {
             h('button', { class: 'btn block', onClick: () => { close(); finish(); } }, 'Смотреть итоги'))));
       } else {
         const cost = rescueCost(order, rescues);
-        const can = state.rep >= cost && rescues < 2;
+        const have = state.rep - repSpent;
+        const can = have >= cost && rescues < 2;
         card.appendChild(h('div', { class: 'sheet', style: { alignSelf: 'center', borderRadius: '24px', maxWidth: '88%', margin: '0 auto' } },
           h('div', { class: 'body', style: { textAlign: 'center', padding: '20px' } },
             h('h3', null, 'Не успели!'), h('p', null, `Отмыто ${Math.round(clean)}%, а нужно хотя бы ${THRESHOLD}%. Можно взять ещё ${RESCUE_SECONDS} секунд за репутацию или сдать как есть.`),
-            h('div', { class: 'row', style: { justifyContent: 'center', margin: '8px 0' } }, icon('rep'), h('b', null, ` ${cost}`), h('span', { class: 'muted' }, ` (у тебя ${state.rep})`)),
-            h('button', { class: `btn gold block${can ? '' : ' disabled'}`, onClick: () => { state.rep -= cost; repSpent += cost; rescues++; rescued = true; eng.addTime(RESCUE_SECONDS); audio.sfx('rescue'); haptics.event('rescue'); close(); paused = false; last = performance.now(); refreshTop(); } }, 'Спасти заказ'),
+            h('div', { class: 'row', style: { justifyContent: 'center', margin: '8px 0' } }, icon('rep'), h('b', null, ` ${cost}`), h('span', { class: 'muted' }, ` (у тебя ${have})`)),
+            h('button', { class: `btn gold block${can ? '' : ' disabled'}`, onClick: () => { repSpent += cost; rescues++; rescued = true; eng.addTime(RESCUE_SECONDS); audio.sfx('rescue'); haptics.event('rescue'); close(); paused = false; last = performance.now(); refreshTop(); } }, 'Спасти заказ'),
             h('div', { style: { height: '8px' } }),
             h('button', { class: 'btn ghost block', onClick: () => { close(); finish(); } }, 'Сдать как есть'))));
       }
@@ -342,7 +342,6 @@ export function runWash({ state, order, challenges = [], root, onQuit }) {
     function abandon() {
       ended = true; stopTool(); audio.resume && audio.resume(); audio.musicStop(0.5); cancelAnimationFrame(raf); ro.disconnect(); sensors.setShakeHandler(null);
       document.removeEventListener('visibilitychange', onVis);
-      if (repSpent) { state.rep += repSpent; A.refreshTop(); }
       document.body.classList.remove('in-wash'); screen.remove(); onQuit && onQuit(); resolve({ abandoned: true, quit: true });
     }
 
@@ -380,9 +379,8 @@ export function runWash({ state, order, challenges = [], root, onQuit }) {
           if (dist < 0.25) held += dt; else held = 0;
           const res = eng.apply(phase, prevEx, prevEy, ex, ey, dt, { product, held, speed });
           if (view.cursor) {
-            const off = qid('sway') ? view.sway(tAll) / GW * CW * view.sx : 0;
-            let sxp = view.gx(qid('mirror') ? GW - ex : ex) + off, syp = view.gy(ey);
-            view.cursor.x = sxp; view.cursor.y = syp; view.cursor.r = curRadius() * view.sx * (CW / GW);
+            const [sxp, syp] = view.toScreen(ex, ey, tAll);
+            view.cursor.x = sxp; view.cursor.y = syp; view.cursor.r = curRadius() * view.sx * (CW / GW) * view.zoom;
             view.emit(phase, res, sxp, syp, dt);
           }
           if (res) {

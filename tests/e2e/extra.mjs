@@ -67,11 +67,13 @@ async function scribble(pg, rows = 5, y0 = 0.12) {
   for (const idx of [1, 2]) { await pg.locator('.seg button').nth(idx).click(); await pg.waitForTimeout(250); await pg.screenshot({ path: `${out}/20-shop-${idx}.png` }); }
   await pg.click('.tab[data-tab=workshop]'); await pg.waitForTimeout(250); await pg.screenshot({ path: `${out}/21-workshop.png` });
   await pg.click('.tab[data-tab=more]'); await pg.waitForTimeout(250);
-  await pg.locator('.card.tap').nth(0).click(); await pg.waitForSelector('.sheet'); await pg.waitForTimeout(250); await pg.screenshot({ path: `${out}/22-achievements.png` });
+  await pg.locator('.card.tap').nth(0).click(); await pg.waitForSelector('.sheet'); await pg.waitForTimeout(250); await pg.screenshot({ path: `${out}/25-howto.png` });
   await pg.click('.sheet .xbtn');
-  await pg.locator('.card.tap').nth(1).click(); await pg.waitForSelector('.sheet'); await pg.waitForTimeout(200); await pg.screenshot({ path: `${out}/23-collection.png` });
+  await pg.locator('.card.tap').nth(1).click(); await pg.waitForSelector('.sheet'); await pg.waitForTimeout(250); await pg.screenshot({ path: `${out}/22-achievements.png` });
   await pg.click('.sheet .xbtn');
-  await pg.locator('.card.tap').nth(2).click(); await pg.waitForSelector('.sheet'); await pg.waitForTimeout(200); await pg.screenshot({ path: `${out}/24-settings.png` });
+  await pg.locator('.card.tap').nth(2).click(); await pg.waitForSelector('.sheet'); await pg.waitForTimeout(200); await pg.screenshot({ path: `${out}/23-collection.png` });
+  await pg.click('.sheet .xbtn');
+  await pg.locator('.card.tap').nth(3).click(); await pg.waitForSelector('.sheet'); await pg.waitForTimeout(200); await pg.screenshot({ path: `${out}/24-settings.png` });
   await pg.click('.sheet .xbtn');
   ok(errors.length === 0, 'экраны хаба без ошибок' + (errors.length ? ': ' + errors[0] : ''));
   await ctx.close();
@@ -126,10 +128,11 @@ for (const q of QUIRKS) {
   await pg.click('.overlay .btn.gold');
   await pg.waitForTimeout(300);
   const lim = await pg.evaluate(() => window.__wash.eng.limit);
+  ok(lim > 100, 'спасение продлило лимит (' + Math.round(lim) + ' с)');
+  await pg.evaluate(() => window.__wash.finish());
+  await pg.waitForSelector('.res');
   const rep = await pg.evaluate(() => window.__game.state.rep);
-  ok(rep < 5, 'спасение списывает репутацию (' + rep + ')');
-  await pg.evaluate(() => { const e = window.__wash.eng; e.time = e.limit - 0.2; });
-  await pg.waitForSelector('.overlay .btn.ghost', { timeout: 5000 }).catch(() => {});
+  ok(rep < 5, 'репутация за спасение списана в итогах (' + rep + ')');
   ok(errors.length === 0, 'спасение без ошибок' + (errors.length ? ': ' + errors[0] : ''));
   await ctx.close();
 }

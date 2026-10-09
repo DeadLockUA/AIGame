@@ -192,6 +192,7 @@ function makeComments(rng, stars, absurd) {
 export function applyResult(state, order, result, challenges = []) {
   const finds = result.finds.map((id) => FIND_BY_ID[id]).filter(Boolean);
   const out = settle(state, order, { ...result, finds }, challenges);
+  if (result.repSpent) state.rep = Math.max(0, state.rep - result.repSpent);
   const first = !state.progress.done[order.id];
   state.coins += out.total;
   state.rep += out.rep;
@@ -204,7 +205,7 @@ export function applyResult(state, order, result, challenges = []) {
   if (out.stars > 0 && !result.usedVacuum) state.stats.noVacuum++;
   if (order.absurd && out.stars > 0) state.stats.absurd++;
   if (out.stars > 0) state.stats.challenges += challenges.length;
-  if (result.rescued) state.stats.noRescueStreak = 0; else state.stats.noRescueStreak++;
+  if (out.stars > 0 && !result.rescued) state.stats.noRescueStreak++; else state.stats.noRescueStreak = 0;
   state.stats.bestNoRescue = Math.max(state.stats.bestNoRescue, state.stats.noRescueStreak);
   for (const f of finds) { state.finds[f.id] = (state.finds[f.id] || 0) + 1; state.stats.finds++; }
   // остатки расходников возвращаются на склад
