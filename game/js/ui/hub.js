@@ -116,8 +116,9 @@ function tabOrders() {
     body.appendChild(h('div', { class: 'card row sb' }, h('span', { class: 'muted' }, 'Ты смотришь другой район.'), h('button', { class: 'btn sm teal', onClick: () => { ST.enterSeason(state, sid); A.save(); viewSeason = sid; renderBody(); } }, 'Работать здесь')));
   }
   const newDirt = sid >= 2 && sid <= 5 ? [['sand', 'grease'], ['stain'], ['deep'], ['mold']][sid - 2] : null;
+  const newGear = { 2: 'В магазине новые инструменты.', 3: 'В магазине открылись насадки и роторная щётка.', 5: 'Теперь доступны паровой «Дракон», туманник и промышленный пылесос (нужна репутация).' }[sid];
   if (newDirt) {
-    body.appendChild(h('div', { class: 'card', style: { background: '#fff4d6' } }, h('b', null, 'Новое в районе'), h('div', { class: 'chips', style: { margin: '6px 0' } }, newDirt.map((t) => h('span', { class: 'chip' }, dirtDot(t), dirtName(t)))), h('div', { class: 'muted' }, newDirt.map((t) => `${dirtName(t)}: ${DIRT.find((d) => d.id === t).hint.toLowerCase()}.`).join(' '))));
+    body.appendChild(h('div', { class: 'card', style: { background: '#fff4d6' } }, h('b', null, 'Новое в районе'), h('div', { class: 'chips', style: { margin: '6px 0' } }, newDirt.map((t) => h('span', { class: 'chip' }, dirtDot(t), dirtName(t)))), h('div', { class: 'muted' }, newDirt.map((t) => `${dirtName(t)}: ${DIRT.find((d) => d.id === t).hint.toLowerCase()}.`).join(' ') + (newGear ? ' ' + newGear : ''))));
   }
   body.appendChild(h('div', { class: 'card' }, h('div', { class: 'row sb' }, h('b', null, 'Заказы района'), h('b', null, `${doneN} / 6`)), h('div', { class: 'bar', style: { marginTop: '6px' } }, h('i', { style: { width: (doneN / 6) * 100 + '%' } })), h('div', { class: 'muted', style: { marginTop: '6px' } }, season.blurb)));
 
@@ -173,7 +174,7 @@ function toolCard(t, phase) {
     h('div', { style: { textAlign: 'right' } },
       owned ? (eq ? h('span', { class: 'chip good' }, 'Надето') : h('button', { class: 'btn sm teal', onClick: () => { ST.equipTool(state, t.id); audio.ui('tick'); A.save(); renderBody(); } }, 'Надеть'))
         : locked ? h('span', { class: 'chip' }, `Район ${lockS}`)
-          : h('div', null, priceTag(t.price, t.rep), check.ok ? null : h('div', { class: 'muted', style: { fontSize: '.72em' } }, check.why), h('div', { style: { height: '4px' } }), h('button', { class: 'btn sm gold' + (check.ok ? '' : ' disabled'), onClick: () => { const r = ST.buyTool(state, t.id); if (r.ok) { audio.ui('buy'); haptics.event('buy'); toast('Куплено: ' + t.name, 'good'); A.save(); renderBody(); } else { audio.ui('error'); toast(r.why, 'bad'); } } }, 'Купить'))));
+          : h('div', null, priceTag(t.price, t.rep), check.ok ? null : h('div', { class: 'muted', style: { fontSize: '.72em' } }, check.why), h('div', { style: { height: '4px' } }), h('button', { class: 'btn sm gold' + (check.ok ? '' : ' disabled'), onClick: () => { const r = ST.buyTool(state, t.id); if (r.ok) { audio.ui('buy'); haptics.event('buy'); toast('Куплено: ' + t.name + (Object.values(state.equipped).includes(t.id) ? '' : '. Надень в наборе.'), 'good'); A.save(); renderBody(); } else { audio.ui('error'); toast(r.why, 'bad'); } } }, 'Купить'))));
   return card;
 }
 function consRow(kind, id, name, desc, color) {
@@ -200,14 +201,14 @@ function tabShop() {
       list.forEach((t) => body.appendChild(toolCard(t, ph)));
     }
   } else if (shopTab === 'mods') {
-    body.appendChild(h('div', { class: 'muted' }, `Насадки вставляются в слоты инструментов: ${modSlots(state)} на инструмент.` + (modsAvailable(state) ? '' : ' Откроются в районе №3.')));
+    body.appendChild(h('div', { class: 'muted' }, `Насадки вставляются в слоты: ${modSlots(state)} на каждый тип инструмента (пылесос, средство, смыв). Лишняя вытесняет прежнюю.` + (modsAvailable(state) ? '' : ' Откроются в районе №3.')));
     for (const slot of ['vacuum', 'applicator', 'rinse']) {
       body.appendChild(h('div', { class: 'h2' }, { vacuum: 'Пылесос', applicator: 'Средство', rinse: 'Смыв' }[slot]));
       MODS.filter((m) => m.slot === slot).forEach((m) => {
         const owned = state.owned.mods.includes(m.id), eq = state.equipped.mods[slot].includes(m.id);
         const chk = ST.canBuyMod(state, m.id);
         body.appendChild(h('div', { class: 'card tool' + (eq ? ' equipped' : '') },
-          h('div', { class: 'badgebox' }, icon('gear')), h('div', { class: 'grow' }, h('b', null, m.name), h('div', { class: 'muted' }, m.desc)),
+          h('div', { class: 'badgebox' }, icon(slot === 'vacuum' ? 'vacuum' : slot === 'applicator' ? 'spray' : 'rinse')), h('div', { class: 'grow' }, h('b', null, m.name), h('div', { class: 'muted' }, m.desc)),
           owned ? (eq ? h('button', { class: 'btn sm ghost', onClick: () => { ST.unequipMod(state, m.id); A.save(); renderBody(); } }, 'Снять') : h('button', { class: 'btn sm teal', onClick: () => { ST.equipMod(state, m.id); audio.ui('tick'); A.save(); renderBody(); } }, 'Надеть'))
             : h('div', { style: { textAlign: 'right' } }, priceTag(m.price, m.rep), chk.ok ? null : h('div', { class: 'muted', style: { fontSize: '.72em' } }, chk.why), h('div', { style: { height: '4px' } }), h('button', { class: 'btn sm gold' + (chk.ok ? '' : ' disabled'), onClick: () => { const r = ST.buyMod(state, m.id); if (r.ok) { audio.ui('buy'); toast('Куплено: ' + m.name, 'good'); A.save(); renderBody(); } else toast(r.why, 'bad'); } }, 'Купить'))));
       });

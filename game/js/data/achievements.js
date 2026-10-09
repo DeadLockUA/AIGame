@@ -66,7 +66,7 @@ export default [
 
   // mods
   { id: 'a_mods_3', name: 'Тюнинг для щётки', desc: 'Поставь 3 насадки.', check: 'mods', goal: 3, rewardCoins: 120, rewardRep: 0 },
-  { id: 'a_mods_10', name: 'Инженер с пенным уклоном', desc: 'Поставь 10 насадок.', check: 'mods', goal: 10, rewardCoins: 600, rewardRep: 2 },
+  { id: 'a_mods_10', name: 'Инженер с пенным уклоном', desc: 'Собери все 9 насадок.', check: 'mods', goal: 9, rewardCoins: 600, rewardRep: 2 },
 
   // decor
   { id: 'a_decor_3', name: 'Вьём гнёздышко', desc: 'Расставь 3 предмета декора. Кот выбрал себе одну подушку.', check: 'decor', goal: 3, rewardCoins: 100, rewardRep: 0 },

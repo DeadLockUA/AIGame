@@ -128,10 +128,11 @@ for (const q of QUIRKS) {
   await pg.click('.overlay .btn.gold');
   await pg.waitForTimeout(300);
   const lim = await pg.evaluate(() => window.__wash.eng.limit);
+  ok(lim > 100, 'спасение продлило лимит (' + Math.round(lim) + ' с)');
+  await pg.evaluate(() => window.__wash.finish());
+  await pg.waitForSelector('.res');
   const rep = await pg.evaluate(() => window.__game.state.rep);
-  ok(rep < 5, 'спасение списывает репутацию (' + rep + ')');
-  await pg.evaluate(() => { const e = window.__wash.eng; e.time = e.limit - 0.2; });
-  await pg.waitForSelector('.overlay .btn.ghost', { timeout: 5000 }).catch(() => {});
+  ok(rep < 5, 'репутация за спасение списана в итогах (' + rep + ')');
   ok(errors.length === 0, 'спасение без ошибок' + (errors.length ? ': ' + errors[0] : ''));
   await ctx.close();
 }

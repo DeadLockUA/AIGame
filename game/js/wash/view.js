@@ -23,6 +23,7 @@ export class WashView {
     }
     this.cursor = null; // { x, y, r (px), phase, down }
     this.dark = engine.quirks.some((q) => q.id === 'dark');
+    this.zoom = engine.quirks.some((q) => q.id === 'sway') ? 0.92 : 1;
     this.time = 0;
     this.collecting = [];
     this.setSize(canvas.width, canvas.height, 1);
@@ -40,6 +41,18 @@ export class WashView {
   gy(y) { return (FRINGE + (y / GH) * CH) * this.sy; }
   // пиксели канваса -> сетка
   toGrid(px, py) { return [(px / this.sx / CW) * GW, ((py / this.sy - FRINGE) / CH) * GH]; }
+
+  swayPx(t) { return this.eng.quirks.some((q) => q.id === 'sway') ? this.sway(t) / GW * CW * this.sx : 0; }
+  /** Клетка сетки -> пиксель холста (с учётом качки и масштаба). */
+  toScreen(x, y, t) {
+    const cx = this.W / 2, cy = this.H / 2;
+    return [cx + this.zoom * (this.gx(x) + this.swayPx(t) - cx), cy + this.zoom * (this.gy(y) - cy)];
+  }
+  /** Пиксель холста -> клетка сетки. */
+  fromScreen(px, py, t) {
+    const cx = this.W / 2, cy = this.H / 2;
+    return this.toGrid((px - cx) / this.zoom + cx - this.swayPx(t), (py - cy) / this.zoom + cy);
+  }
 
   sway(t) {
     const q = this.eng.quirks.find((q) => q.id === 'sway');
@@ -160,11 +173,12 @@ export class WashView {
     const g = this.g;
     this.fx.update(dt);
     this.updateLayers();
-    const off = this.eng.quirks.some((q) => q.id === 'sway') ? this.sway(t) / GW * CW * this.sx : 0;
+    const off = this.swayPx(t);
+    const zcx = this.W / 2, zcy = this.H / 2;
     g.setTransform(1, 0, 0, 1, 0, 0);
     g.clearRect(0, 0, this.W, this.H);
     g.save();
-    g.translate(off, 0);
+    g.translate(zcx, zcy); g.scale(this.zoom, this.zoom); g.translate(-zcx + off, -zcy);
     g.drawImage(this.carpet, 0, 0, this.W, this.H);
     this.drawBody(g, true, true);
     // находки

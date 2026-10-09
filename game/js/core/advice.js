@@ -4,7 +4,7 @@ import { unitPrice, productAvailable, filterAvailable } from './economy.js';
 import * as ST from './state.js';
 
 // Оценка расхода: сколько единиц нужно на этот заказ.
-export function recommend(order, state) {
+export function recommend(order, state, challengeIds = []) {
   const wet = {};
   for (const L of order.profile.layers) {
     const t = DIRT.findIndex((d) => d.id === L.type);
@@ -23,18 +23,20 @@ export function recommend(order, state) {
   }
   const out = {};
   const base = 6 + order.u * 10;
-  for (const [id, share] of Object.entries(picks)) out[id] = Math.max(3, Math.round(base * (0.6 + share)));
+  const useMul = challengeIds.includes('c_heavy') ? 1.5 : 1;
+  for (const [id, share] of Object.entries(picks)) out[id] = Math.max(3, Math.round(base * (0.6 + share) * useMul));
   if (!Object.keys(out).length) out.p_soap = 5;
   const rin = ALL_TOOLS[state.equipped.rinse];
-  const steam = rin.steam ? Math.round(30 + order.u * 40) : 0;
-  const water = rin.steam ? 0 : Math.round((90 + order.u * 100) * rin.flow);
+  const steam = rin.steam ? Math.round((30 + order.u * 40) * useMul) : 0;
+  const waterMul = (challengeIds.includes('c_dry') ? 2 : 1) * useMul;
+  const water = rin.steam ? 0 : Math.round((90 + order.u * 100) * rin.flow * waterMul);
   return { products: out, water, steam };
 }
 
 
 /** Докупает рекомендованное. Возвращает потраченные монеты. */
-export function autoBuy(state, order) {
-  const rec = recommend(order, state);
+export function autoBuy(state, order, challengeIds = []) {
+  const rec = recommend(order, state, challengeIds);
   let spent = 0, ok = true;
   const need = (kind, id, target) => {
     const have = ST.stockOf(state, kind, id);

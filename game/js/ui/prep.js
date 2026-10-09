@@ -36,7 +36,7 @@ export function openPrep(order) {
     const limit = Math.round(order.limit * tm * (rush ? 0.7 : 1));
     const chs = CHALLENGES.filter((c) => chosen.has(c.id));
     const payMul = chs.reduce((a, c) => a * c.pay, 1) * deskMul(state);
-    const rec = recommend(order, state);
+    const rec = recommend(order, state, [...chosen]);
 
     const head = h('div', { class: 'head' }, h('h3', null, order.title), h('button', { class: 'xbtn', 'aria-label': 'Закрыть', onClick: close }, icon('close')));
     const body = h('div', { class: 'body' });
@@ -46,7 +46,7 @@ export function openPrep(order) {
     body.appendChild(h('div', { class: 'card' },
       h('div', { class: 'row sb' }, h('div', { class: 'row' }, thumb({ style: order.style, seed: order.seed }, 'thumb'), h('div', null, h('div', { class: 'chips' }, order.dirtFocus.map((t) => h('span', { class: 'chip' }, dirtDot(t), dirtName(t)))), h('div', { class: 'muted', style: { marginTop: '6px' } }, `Нужно отмыть хотя бы ${THRESHOLD}%, три звезды от 98%`))),
         h('div', { style: { textAlign: 'right' } }, h('div', { class: 'price' }, icon('coin'), '~' + fmt(order.pay * payMul)), h('div', { class: 'row', style: { justifyContent: 'flex-end' } }, icon('clock'), h('b', null, fmtTime(limit)))))));
-    if (failStreak(state) >= 4) body.appendChild(h('div', { class: 'card', style: { background: '#e6f6ef' } }, h('b', null, 'Режим поддержки'), h('div', { class: 'muted' }, 'Несколько неудач подряд: ковёр чуть чище, времени больше. Это временно.')));
+    if (failStreak(state) >= 2) body.appendChild(h('div', { class: 'card', style: { background: '#e6f6ef' } }, h('b', null, 'Режим поддержки'), h('div', { class: 'muted' }, failStreak(state) >= 4 ? 'Несколько неудач подряд: времени больше, а грязи примерно на четверть меньше. Это временно.' : 'Две неудачи подряд: времени теперь больше. Это временно.')));
     if (order.quirks.length) {
       const q = QUIRK_INFO[order.quirks[0].id];
       body.appendChild(h('div', { class: 'card', style: { background: '#f3e6fb' } }, h('span', { class: 'badge' }, 'АБСУРД'), ' ', h('b', null, q.name), h('div', { class: 'muted' }, q.desc)));
@@ -104,7 +104,7 @@ export function openPrep(order) {
   }
 
   function doAutoBuy() {
-    const { spent, ok } = autoBuy(state, order);
+    const { spent, ok } = autoBuy(state, order, [...chosen]);
     audio.ui(spent > 0 ? 'buy' : 'tick'); A.save(); A.refreshTop();
     toast(spent > 0 ? `Закуплено на ${Math.round(spent)} монет` : ok ? 'Всё уже есть' : 'Не хватает монет', spent > 0 ? 'good' : ok ? '' : 'bad');
     render();

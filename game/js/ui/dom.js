@@ -30,6 +30,7 @@ export const $ = (s, r = document) => r.querySelector(s);
 export function toast(text, kind = '') {
   const box = document.getElementById('toasts');
   const t = h('div', { class: 'toast ' + kind }, text);
+  while (box.children.length >= 2) box.firstChild.remove();
   box.appendChild(t);
   setTimeout(() => t.classList.add('out'), 2200);
   setTimeout(() => t.remove(), 2700);

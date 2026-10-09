@@ -1,13 +1,13 @@
 // Типы грязи, инструменты, расходники, модификаторы.
 export const DIRT = [
-  { id: 'dust',   name: 'Пыль',            phase: 'dry', weight: 0.5, color: [150, 132, 110], alpha: 0.62, hint: 'Пылесос' },
-  { id: 'hair',   name: 'Шерсть и волосы', phase: 'dry', weight: 0.7, color: [70, 52, 40],    alpha: 0.9,  hint: 'Пылесос с щёткой' },
-  { id: 'sand',   name: 'Песок',           phase: 'dry', weight: 0.8, color: [196, 166, 108], alpha: 0.85, hint: 'Мощный пылесос' },
-  { id: 'mud',    name: 'Мокрая грязь',    phase: 'wet', weight: 1.0, color: [84, 58, 38],    alpha: 0.92, hint: 'Мыло и вода' },
-  { id: 'grease', name: 'Жир',             phase: 'wet', weight: 1.2, color: [150, 118, 40],  alpha: 0.78, hint: 'Обезжириватель' },
-  { id: 'stain',  name: 'Пятна',           phase: 'wet', weight: 1.3, color: [100, 40, 40],   alpha: 0.9,  hint: 'Энзим' },
-  { id: 'deep',   name: 'Въевшаяся грязь', phase: 'wet', weight: 1.5, color: [110, 100, 92],  alpha: 0.7,  hint: 'Скраб, оксипена, пар' },
-  { id: 'mold',   name: 'Плесень',         phase: 'wet', weight: 1.4, color: [64, 112, 74],   alpha: 0.88, hint: 'Антиплесень, пар' },
+  { id: 'dust', short: 'Пыль', name: 'Пыль',            phase: 'dry', weight: 0.5, color: [150, 132, 110], alpha: 0.62, hint: 'Пылесос' },
+  { id: 'hair', short: 'Шерсть', name: 'Шерсть и волосы', phase: 'dry', weight: 0.7, color: [70, 52, 40],    alpha: 0.9,  hint: 'Пылесос с щёткой' },
+  { id: 'sand', short: 'Песок', name: 'Песок',           phase: 'dry', weight: 0.8, color: [196, 166, 108], alpha: 0.85, hint: 'Мощный пылесос' },
+  { id: 'mud', short: 'Грязь', name: 'Мокрая грязь',    phase: 'wet', weight: 1.0, color: [84, 58, 38],    alpha: 0.92, hint: 'Мыло и вода' },
+  { id: 'grease', short: 'Жир', name: 'Жир',             phase: 'wet', weight: 1.2, color: [150, 118, 40],  alpha: 0.78, hint: 'Обезжириватель' },
+  { id: 'stain', short: 'Пятна', name: 'Пятна',           phase: 'wet', weight: 1.3, color: [100, 40, 40],   alpha: 0.9,  hint: 'Энзим' },
+  { id: 'deep', short: 'Въевшаяся', name: 'Въевшаяся грязь', phase: 'wet', weight: 1.5, color: [110, 100, 92],  alpha: 0.7,  hint: 'Скраб, оксипена, пар' },
+  { id: 'mold', short: 'Плесень', name: 'Плесень',         phase: 'wet', weight: 1.4, color: [64, 112, 74],   alpha: 0.88, hint: 'Антиплесень, пар' },
 ];
 export const D = Object.fromEntries(DIRT.map((d, i) => [d.id, i]));
 export const NDIRT = DIRT.length;
