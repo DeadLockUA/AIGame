@@ -200,7 +200,7 @@ export class WashEngine {
 
   _vacuum(x, y, w) {
     const v = this.vac;
-    const clog = this.filter ? 1 - 0.65 * clamp(this.filterLoad / (this.filter.cap * v.filterCap), 0, 1) : 0.85;
+    const clog = this.filter ? 1 - 0.55 * clamp(this.filterLoad / (this.filter.cap * v.filterCap), 0, 1) : 0.85;
     const q = this.filter ? this.filter.quality : 0.85;
     const base = v.power * q * clog * 5.0 * w;
     let removed = 0;

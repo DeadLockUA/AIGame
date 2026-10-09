@@ -35,7 +35,7 @@ const SEASONS = {
     root: 48, scale: [0, 2, 4, 7, 9], bpm: 76, beats: 4, swing: 0, bpc: 1, rev: 0.35,
     prog: [[ch(0, add9), ch(9, m), ch(5, M), ch(0, M)], [ch(0, M), ch(5, M), ch(9, m), ch(7, sus2)]],
     pad: 'soft', padBase: 55,
-    bass: { timbre: 'bass_sine', base: 36, pat: [[0, 0, 5, 1], [4, 1, 3, 0.5]] },
+    bass: { timbre: 'bass_sine', base: 41, pat: [[0, 0, 5, 1], [4, 1, 3, 0.5]] },
     arp: { timbre: 'harp', base: 60, w: [1, 0.35, 0.6, 0.35, 0.8, 0.35, 0.6, 0.35], mode: 'updown', vel: 1 },
     mel: { timbre: 'ep', lo: 67, hi: 88, dens: 0.32, rest: 0.2, leap: 0.08, lens: [2, 2, 3, 4], vel: 1 },
     shim: { timbre: 'bell', p: 0.35 }, perc: null,
@@ -54,7 +54,7 @@ const SEASONS = {
     root: 50, scale: [0, 2, 3, 5, 7, 9, 10], bpm: 74, beats: 4, swing: 0.22, bpc: 1, rev: 0.3,
     prog: [[ch(0, [0, 3, 7, 10]), ch(5, d7), ch(10, M7), ch(7, m7)], [ch(0, m7), ch(7, m7), ch(5, m7), ch(10, M7)]],
     pad: 'soft', padBase: 53,
-    bass: { timbre: 'bass_sine', base: 36, pat: [[0, 0, 3, 1], [3, 1, 2, 0.5], [6, 0, 2, 0.7]] },
+    bass: { timbre: 'bass_sine', base: 41, pat: [[0, 0, 3, 1], [3, 1, 2, 0.5], [6, 0, 2, 0.7]] },
     arp: { timbre: 'ep', base: 57, w: [1, 0, 0.3, 0, 0.7, 0, 0.35, 0.2], mode: 'up', vel: 1 },
     mel: { timbre: 'ep', lo: 62, hi: 81, dens: 0.3, rest: 0.25, leap: 0.1, lens: [2, 3, 4], vel: 1 },
     shim: { timbre: 'box', p: 0.25 },
@@ -64,7 +64,7 @@ const SEASONS = {
     root: 50, scale: [0, 2, 4, 7, 9], bpm: 68, beats: 4, swing: 0, bpc: 2, rev: 0.6,
     prog: [[ch(0, M), ch(2, sus2), ch(9, m), ch(5, M)], [ch(0, add9), ch(7, sus2), ch(9, m), ch(5, M)]],
     pad: 'glass', padBase: 57,
-    bass: { timbre: 'bass_sine', base: 38, pat: [[0, 0, 8, 1]] },
+    bass: { timbre: 'bass_sine', base: 43, pat: [[0, 0, 8, 1]] },
     arp: { timbre: 'harp', base: 66, w: [0.8, 0, 0.5, 0, 0.6, 0, 0.5, 0], mode: 'updown', vel: 0.9 },
     mel: { timbre: 'bell', lo: 69, hi: 93, dens: 0.22, rest: 0.3, leap: 0.12, lens: [3, 4, 6], vel: 0.9 },
     shim: { timbre: 'bell', p: 0.5 }, perc: null,
@@ -83,7 +83,7 @@ const SEASONS = {
     root: 53, scale: [0, 2, 4, 5, 7, 9, 11], bpm: 90, beats: 4, swing: 0.24, bpc: 1, rev: 0.3,
     prog: [[ch(0, M7), ch(9, m7), ch(2, m7), ch(7, d7)], [ch(0, M7), ch(4, m7), ch(9, m7), ch(2, m7)]],
     pad: 'glass', padBase: 53,
-    bass: { timbre: 'bass_sine', base: 36, pat: [[0, 0, 2, 1], [2, 2, 2, 0.8], [4, 1, 2, 1], [6, -1, 2, 0.6]] },
+    bass: { timbre: 'bass_sine', base: 41, pat: [[0, 0, 2, 1], [2, 2, 2, 0.8], [4, 1, 2, 1], [6, -1, 2, 0.6]] },
     arp: { timbre: 'ep', base: 60, w: [0.9, 0, 0.3, 0.5, 0, 0.6, 0.3, 0], mode: 'up', vel: 0.9 },
     mel: { timbre: 'ep', lo: 64, hi: 86, dens: 0.34, rest: 0.22, leap: 0.2, lens: [1, 2, 2, 3], vel: 1 },
     shim: { timbre: 'bell', p: 0.2 },
@@ -102,7 +102,7 @@ const SEASONS = {
     root: 50, scale: [0, 2, 3, 5, 7, 8, 11], bpm: 62, beats: 4, swing: 0, bpc: 1, rev: 0.55,
     prog: [[ch(0, m), ch(8, M), ch(5, m), ch(7, M)], [ch(0, m), ch(5, m), ch(7, M), ch(0, m)]],
     pad: 'strings', padBase: 52, padGain: 1.25,
-    bass: { timbre: 'bass_sine', base: 33, pat: [[0, 0, 8, 1]] },
+    bass: { timbre: 'bass_sine', base: 40, pat: [[0, 0, 8, 1]] },
     arp: { timbre: 'harp', base: 57, w: [1, 0, 0.5, 0, 0.7, 0, 0.5, 0], mode: 'up', vel: 0.9 },
     mel: { timbre: 'cello', lo: 57, hi: 81, dens: 0.22, rest: 0.18, leap: 0.25, lens: [3, 4, 6, 8], vel: 1 },
     shim: { timbre: 'bell', p: 0.3 },
@@ -112,7 +112,7 @@ const SEASONS = {
     root: 48, scale: [0, 2, 4, 6, 7, 9, 11], bpm: 58, beats: 4, swing: 0, bpc: 2, rev: 0.5,
     prog: [[ch(0, M7), ch(2, M), ch(0, M7), ch(4, m7)], [ch(0, M7), ch(7, M), ch(2, M), ch(0, M7)]],
     pad: 'glass', padBase: 55,
-    bass: { timbre: 'bass_sine', base: 36, pat: [[0, 0, 8, 1]] },
+    bass: { timbre: 'bass_sine', base: 41, pat: [[0, 0, 8, 1]] },
     arp: { timbre: 'bell', base: 67, w: [0.7, 0, 0.4, 0, 0.5, 0, 0.4, 0], mode: 'updown', vel: 0.7 },
     mel: { timbre: 'box', lo: 72, hi: 96, dens: 0.22, rest: 0.25, leap: 0.12, lens: [2, 3, 4], vel: 0.9 },
     shim: { timbre: 'bell', p: 0.45 }, perc: null,
@@ -121,7 +121,7 @@ const SEASONS = {
     root: 55, scale: [0, 2, 4, 5, 7, 9, 11], bpm: 88, beats: 4, swing: 0, bpc: 1, rev: 0.5,
     prog: [[ch(0, M), ch(7, M), ch(4, m), ch(5, M)], [ch(0, M), ch(5, M), ch(7, M), ch(0, M)]],
     pad: 'choir', padBase: 55, padGain: 1.15,
-    bass: { timbre: 'bass_sine', base: 36, pat: [[0, 0, 4, 1], [4, 1, 3, 0.8]] },
+    bass: { timbre: 'bass_sine', base: 41, pat: [[0, 0, 4, 1], [4, 1, 3, 0.8]] },
     arp: { timbre: 'harp', base: 60, w: [1, 0.3, 0.6, 0.3, 0.8, 0.3, 0.6, 0.3], mode: 'up', vel: 0.9 },
     mel: { timbre: 'horn', lo: 62, hi: 86, dens: 0.25, rest: 0.15, leap: 0.22, lens: [3, 4, 6], vel: 1 },
     shim: { timbre: 'bell', p: 0.35 },
@@ -136,7 +136,7 @@ const NOTE_TIMBRES = {
   saw: (f, d) => ({ partials: [{ type: 'sawtooth' }, { type: 'triangle', detune: 7, gain: 0.6 }], filter: { type: 'lowpass', f: 2600, fEnd: 500, q: 1.1, fT: d * 0.35 }, atk: 0.004, dur: d * 0.8 }),
   bell: (f, d) => ({ partials: [{ type: 'sine' }, { type: 'sine', ratio: 2, gain: 0.1, dec: d * 0.3 }], fm: { ratio: 3.5, index: 0.7, dec: d * 0.2 }, atk: 0.004, dur: d }),
   box: (f, d) => ({ partials: [{ type: 'sine' }, { type: 'sine', ratio: 4, gain: 0.1, dec: 0.25 }], fm: { ratio: 5, index: 0.3, dec: 0.12 }, atk: 0.003, dur: d * 0.8 }),
-  bass_sine: (f, d) => ({ partials: [{ type: 'sine' }, { type: 'triangle', ratio: 2, gain: 0.18 }], filter: { type: 'lowpass', f: 700 }, atk: 0.02, rel: Math.min(0.25, d * 0.5), dur: d }),
+  bass_sine: (f, d) => ({ partials: [{ type: 'sine' }, { type: 'triangle', ratio: 2, gain: 0.4 }], filter: { type: 'lowpass', f: 800 }, atk: 0.02, rel: Math.min(0.25, d * 0.5), dur: d }),
   bass_pluck: (f, d) => ({ partials: [{ type: 'triangle' }, { type: 'sine', ratio: 0.5, gain: 0.5 }], filter: { type: 'lowpass', f: 900, fEnd: 260 }, atk: 0.008, dur: d }),
   // длинные «смычковые/духовые»
   cello: (f, d) => ({ partials: [{ type: 'sawtooth', detune: -5 }, { type: 'sawtooth', detune: 6, gain: 0.7 }], filter: { type: 'lowpass', f: 1500, q: 0.6 }, atk: 0.12, rel: Math.min(0.5, d * 0.5), dur: d }),
@@ -168,6 +168,7 @@ class Engine {
     this.clean = 0;
     this.rnd = mulberry32((Date.now() ^ 0x9e3779b9) >>> 0);
     this.paused = false;
+    this.maxV = 0;
   }
 
   // -------- граф ---------
@@ -256,8 +257,8 @@ class Engine {
     const set = (param, v) => { if (instant) param.setValueAtTime(v, t); else param.setTargetAtTime(v, t, 0.04); };
     const s = this.vol.sfx, mu = this.vol.music;
     set(this.sfxIn.gain, s * s);
-    set(this.musicDry.gain, mu * mu * 0.6);
-    set(this.musicWet.gain, mu * mu * 0.6);
+    set(this.musicDry.gain, mu * mu * 0.75);
+    set(this.musicWet.gain, mu * mu * 0.75);
   }
 
   // -------- строительные блоки ---------
@@ -280,7 +281,7 @@ class Engine {
     const ctx = this.ctx;
     const kind = o.kind || 'sfx';
     const cost = o.cost === undefined ? 1 : o.cost;
-    if (cost > 0) { if (this.v[kind] >= this.cap[kind]) return false; this.v[kind]++; }
+    if (cost > 0) { if (this.v[kind] >= this.cap[kind]) return false; this.v[kind]++; const tv = this.v.sfx + this.v.music; if (tv > this.maxV) this.maxV = tv; }
     const t = o.t, dur = Math.max(0.03, o.dur), peak = Math.max(NO * 2, o.peak);
     const atk = Math.min(o.atk ?? 0.005, dur * 0.5);
     const env = ctx.createGain();
@@ -427,7 +428,7 @@ class Engine {
         this._voice({ t, freq: 440, dur: 1.5, peak: 0.1, atk: 0.4, rel: 0.7, partials: [{ type: 'sine', slideTo: 330, slideT: 1.4 }, { type: 'sine', ratio: 1.01, gain: 0.6, slideTo: 330, slideT: 1.4 }], filter: { type: 'lowpass', f: 1400 } });
         this._noiseHit(t, 1.4, 0.03, [{ type: 'bandpass', f: 900, fEnd: 500, q: 2, fT: 1.3 }], { atk: 0.5, rel: 0.6 }); break;
       case 'shake':
-        for (let i = 0; i < 4; i++) this._noiseHit(t + i * 0.07, 0.07, 0.11, [{ type: 'bandpass', f: 3500 + r() * 1500, q: 1.5 }], { atk: 0.003 });
+        for (let i = 0; i < 4; i++) this._noiseHit(t + i * 0.07, 0.07, 0.2, [{ type: 'bandpass', f: 3500 + r() * 1500, q: 1.5 }], { atk: 0.008 });
         this._tone(t, 90, 0.2, 0.15, { partials: [{ type: 'sine', slideTo: 55, slideT: 0.15 }] }); break;
       case 'bubble': {
         const f = 350 + r() * 500;
@@ -710,7 +711,7 @@ class Engine {
         const root = this._chordMidi(S, c0, cfg.bass.base)[0];
         const tone = e[1] === 0 ? root : e[1] === 1 ? root + (c0.t[2] ?? 7) : e[1] === 2 ? root + (c0.t[1] ?? 4) : root + 12;
         const d = e[2] * sd * 0.95;
-        this._voice(Object.assign(NOTE_TIMBRES[cfg.bass.timbre](mtof(tone), d), { kind: 'music', t: tt + jitter(), freq: mtof(tone), peak: 0.15, out: L.bass }));
+        this._voice(Object.assign(NOTE_TIMBRES[cfg.bass.timbre](mtof(tone), d), { kind: 'music', t: tt + jitter(), freq: mtof(tone), peak: cfg.bass.timbre === 'bass_pluck' ? 0.2 : 0.1, out: L.bass }));
       }
     }
     // арпеджио
@@ -719,7 +720,7 @@ class Engine {
       if (w > 0 && rnd() < w) {
         const tones = this._chordMidi(S, S.chord, a.base);
         if (a.mode === 'stab') {
-          tones.slice(0, 3).forEach((mi, k) => this._voice(Object.assign(NOTE_TIMBRES[a.timbre](mtof(mi), 0.5), { kind: 'music', cost: k === 0 ? 1 : 0, t: tt, freq: mtof(mi), peak: 0.04 * a.vel, out: L.arp, pan: (k - 1) * 0.3 })));
+          tones.slice(0, 3).forEach((mi, k) => this._voice(Object.assign(NOTE_TIMBRES[a.timbre](mtof(mi), 0.5), { kind: 'music', cost: k === 0 ? 1 : 0, t: tt, freq: mtof(mi), peak: 0.07 * a.vel, out: L.arp, pan: (k - 1) * 0.3 })));
         } else {
           const seq = tones.concat(tones.map((x) => x + 12));
           let mi;
@@ -766,7 +767,7 @@ class Engine {
       case 'hat': this._noiseHit(t, 0.06, 0.05 * v, [{ type: 'highpass', f: 6500 }, { type: 'lowpass', f: 11000 }], { kind: K, out }); break;
       case 'shaker': this._noiseHit(t, 0.1, 0.05 * v, [{ type: 'bandpass', f: 5500, q: 0.8 }], { kind: K, out, atk: 0.02 }); break;
       case 'drum':
-        this._tone(t, 230, 0.22, 0.28 * v, { kind: K, out, atk: 0.003, partials: [{ type: 'sine', slideTo: 140, slideT: 0.08 }, { type: 'triangle', gain: 0.3, slideTo: 140, slideT: 0.08 }], filter: { type: 'lowpass', f: 1800 } });
+        this._tone(t, 230, 0.22, 0.2 * v, { kind: K, out, atk: 0.003, partials: [{ type: 'sine', slideTo: 140, slideT: 0.08 }, { type: 'triangle', gain: 0.3, slideTo: 140, slideT: 0.08 }], filter: { type: 'lowpass', f: 1800 } });
         this._noiseHit(t, 0.03, 0.04 * v, { type: 'bandpass', f: 1500, q: 1 }, { kind: K, out, cost: 0 }); break;
       case 'rim': this._tone(t, 1250, 0.04, 0.1 * v, { kind: K, out, atk: 0.002 }); break;
       case 'snap': this._noiseHit(t, 0.12, 0.09 * v, [{ type: 'bandpass', f: 1900, q: 0.9 }], { kind: K, out, atk: 0.003 }); break;
@@ -830,6 +831,8 @@ export const audio = {
     }
   }),
 
+  _debug: () => ({ voices: { ...E.v }, state: E.ctx ? E.ctx.state : null, dead: E.dead, music: !!E.sess, tool: E.tool ? E.tool.kind : null }),
+
   // Для тестов: рендер звука в OfflineAudioContext. name: 'ui:tap' | 'sfx:sparkle' | 'tool:vacuum' | 'music:3' | 'menu:3'.
   // opts: {sr, seed, clean (число 0..100 — фиксированно; иначе линейно 0->100), profile(t)->{i,s}}.
   // Возвращает Float32Array (моно) с полями sampleRate, left, right.
@@ -864,7 +867,7 @@ export const audio = {
     const L = buf.getChannelData(0), R = buf.getChannelData(1), out = new Float32Array(L.length);
     for (let i = 0; i < L.length; i++) out[i] = (L[i] + R[i]) * 0.5;
     out.sampleRate = sr;
-    out.left = L; out.right = R;
+    out.left = L; out.right = R; out.maxVoices = e.maxV;
     return out;
   },
 };

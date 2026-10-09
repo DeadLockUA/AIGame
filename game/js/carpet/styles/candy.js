@@ -1,6 +1,8 @@
 // Сладости: леденцы-спирали, полосатые трости, посыпка, пряники, глазурь. Кайма-«гирлянда» из конфет.
 import { CW, CH, css, mix, darken, lighten, pickPalette, petalPath, mirrorX, quad } from '../kit.js';
 
+import { RNG, hashString } from '../../util.js';
+
 const TAU = Math.PI * 2;
 
 const PALS = [
@@ -343,7 +345,8 @@ function compPeppermint(g, rng, pal, B) {
 export default {
   id: 'candy',
   name: 'Сладости',
-  paint(g, rng) {
+  paint(g, rng0) {
+    const rng = new RNG(hashString(rng0.s + ':candy'));
     const pal = pickPalette(rng, PALS);
     pal.cs = [pal.c0, pal.c1, pal.c2, pal.c3];
     const variant = rng.int(0, 2);

@@ -10,6 +10,8 @@ const PALS = [
   { field: [90, 78, 108], field2: [70, 60, 90], border: [60, 96, 62], accent: [244, 200, 110], accent2: [240, 120, 90], ink: [248, 238, 214], dark: [30, 24, 44], leaf: [120, 176, 96], leaf2: [78, 134, 76], egg: [244, 232, 204], baby: [150, 206, 110], baby2: [240, 170, 110], rock: [68, 56, 72], edge: [38, 62, 40] },
 ];
 
+import { RNG, hashString } from '../../util.js';
+
 const TAU = Math.PI * 2;
 
 function outline(g, col, w) { g.lineWidth = w; g.strokeStyle = css(col); g.lineJoin = 'round'; g.stroke(); }
@@ -473,7 +475,8 @@ function compParade(g, rng, pal, B) {
 export default {
   id: 'dino',
   name: 'Динозавры',
-  paint(g, rng) {
+  paint(g, rng0) {
+    const rng = new RNG(hashString(rng0.s + ':dino'));
     const pal = pickPalette(rng, PALS);
     const variant = rng.int(0, 2);
     const inset = border(g, pal, rng, variant);

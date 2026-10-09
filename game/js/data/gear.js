@@ -57,9 +57,9 @@ export const PRODUCTS = [
 
 // Фильтры для пылесоса. cap — сколько грязи выдерживает, quality — множитель силы.
 export const FILTERS = [
-  { id: 'f_paper', name: 'Бумажный',  price: 4,  cap: 22, quality: 1.0, desc: 'Забивается быстро.' },
-  { id: 'f_coal',  name: 'Угольный',  price: 12, cap: 40, quality: 1.12, desc: 'Живёт дольше и сосёт бодрее.' },
-  { id: 'f_hepa',  name: 'HEPA «Нос»', price: 28, cap: 80, quality: 1.25, desc: 'Почти не забивается.' },
+  { id: 'f_paper', name: 'Бумажный',  price: 4,  cap: 140, quality: 1.0, desc: 'Забивается быстро.' },
+  { id: 'f_coal',  name: 'Угольный',  price: 12, cap: 280, quality: 1.12, desc: 'Живёт дольше и сосёт бодрее.' },
+  { id: 'f_hepa',  name: 'HEPA «Нос»', price: 28, cap: 560, quality: 1.25, desc: 'Почти не забивается.' },
 ];
 
 export const CONSUMABLE_PRICES = { water: 0.25, steam: 0.8 }; // за единицу

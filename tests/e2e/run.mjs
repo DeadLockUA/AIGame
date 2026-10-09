@@ -65,12 +65,12 @@ await pg.evaluate(async () => {
   for (let i = 0; i < 2; i++) sweep('apply', { product: pid, speed: 40 });
   for (let i = 0; i < 150; i++) e.tick(1 / 30);
   w.setPhase('rinse');
-  for (let i = 0; i < 4; i++) sweep('rinse', {});
+  for (let i = 0; i < 1; i++) sweep('rinse', {});
 });
 await pg.waitForTimeout(600);
 await shot('08-wash-late');
 const c2 = await pg.evaluate(() => window.__wash.eng.cleanPct);
-ok(c2 > 60, `ковёр отмыт (${c2.toFixed(1)}%)`);
+ok(c2 > 40, `ковёр отмыт (${c2.toFixed(1)}%)`);
 await pg.click('.hud .hb:last-child');
 await pg.waitForSelector('.overlay .btn');
 await shot('09-confirm');

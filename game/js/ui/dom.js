@@ -34,3 +34,4 @@ export function toast(text, kind = '') {
   setTimeout(() => t.classList.add('out'), 2400);
   setTimeout(() => t.remove(), 2900);
 }
+export { icon, iconHtml, ICONS } from './icons.js';

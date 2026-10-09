@@ -16,34 +16,7 @@ import { dirtDot, dirtName, rerender } from './hub.js';
 import { runWash } from './wash.js';
 import { showResult } from './result.js';
 import { sensors } from './sensors.js';
-
-// Оценка расхода: сколько единиц нужно на этот заказ.
-export function recommend(order, state) {
-  const wet = {};
-  for (const L of order.profile.layers) {
-    const t = DIRT.findIndex((d) => d.id === L.type);
-    if (t >= 3) wet[t] = (wet[t] || 0) + L.cover * L.amt * DIRT[t].weight;
-  }
-  const total = Object.values(wet).reduce((a, b) => a + b, 0) || 1;
-  const picks = {};
-  const avail = PRODUCTS.filter((p) => productAvailable(state, p));
-  for (const [t, w] of Object.entries(wet)) {
-    let best = null, bv = -1;
-    for (const p of avail) {
-      const v = (p.aff[t] * p.rate) / Math.pow(unitPrice(state, 'product', p.id), 0.65);
-      if (v > bv) { bv = v; best = p; }
-    }
-    if (best) picks[best.id] = (picks[best.id] || 0) + w / total;
-  }
-  const out = {};
-  const base = 6 + order.u * 10;
-  for (const [id, share] of Object.entries(picks)) out[id] = Math.max(3, Math.round(base * (0.6 + share)));
-  if (!Object.keys(out).length) out.p_soap = 5;
-  const rin = ALL_TOOLS[state.equipped.rinse];
-  const steam = rin.steam ? Math.round(30 + order.u * 40) : 0;
-  const water = rin.steam ? 30 : Math.round((90 + order.u * 100) * rin.flow);
-  return { products: out, water, steam };
-}
+import { recommend, autoBuy } from '../core/advice.js';
 
 export function openPrep(order) {
   const { state, root } = A;
@@ -114,7 +87,7 @@ export function openPrep(order) {
     const fl = FILTERS.filter((f) => filterAvailable(state, f));
     fl.forEach((f) => addLine('filter', f.id, 'Фильтр: ' + f.name, '#c9bba3'));
     body.append(...lines);
-    body.appendChild(h('button', { class: 'btn teal block', onClick: () => autoBuy() }, 'Автоподбор набора'));
+    body.appendChild(h('button', { class: 'btn teal block', onClick: () => doAutoBuy() }, 'Автоподбор набора'));
 
     // вызовы
     body.appendChild(h('div', { class: 'h2' }, 'Вызовы', h('small', null, 'по желанию: больше наград')));
@@ -128,20 +101,8 @@ export function openPrep(order) {
     sheet.append(head, body, foot);
   }
 
-  function autoBuy() {
-    const rec = recommend(order, state);
-    let spent = 0, ok = true;
-    const need = (kind, id, target) => {
-      const have = ST.stockOf(state, kind, id);
-      if (have >= target) return;
-      const r = ST.buyConsumable(state, kind, id, Math.ceil(target - have));
-      if (r.ok) spent += r.price; else ok = false;
-    };
-    for (const [id, n] of Object.entries(rec.products)) need('product', id, n);
-    if (rec.water) need('water', 'water', rec.water);
-    if (rec.steam) need('steam', 'steam', rec.steam);
-    const best = FILTERS.filter((f) => filterAvailable(state, f)).sort((a, b) => b.quality - a.quality).find((f) => true);
-    if (!Object.values(state.inventory.filters).some((n) => n > 0) && best) need('filter', best.id, 1);
+  function doAutoBuy() {
+    const { spent, ok } = autoBuy(state, order);
     audio.ui(spent > 0 ? 'buy' : 'tick'); A.save(); A.refreshTop();
     toast(spent > 0 ? `Закуплено на ${Math.round(spent)} монет` : ok ? 'Всё уже есть' : 'Не хватает монет', spent > 0 ? 'good' : ok ? '' : 'bad');
     render();

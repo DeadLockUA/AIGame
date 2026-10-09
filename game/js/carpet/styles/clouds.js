@@ -1,6 +1,8 @@
 // Облака: небесный градиент, пухлые облака, солнце, радуга, птички. Кайма из волн-облачков.
 import { CW, CH, css, mix, darken, lighten, pickPalette, star, mirrorX } from '../kit.js';
 
+import { RNG, hashString } from '../../util.js';
+
 const TAU = Math.PI * 2;
 
 const PALS = [
@@ -268,16 +270,17 @@ function compLayers(g, rng, pal, B) {
   // слои облаков
   const rows = 6;
   for (let r = 0; r < rows; r++) {
-    const y = hy + 40 + r * ((B.y + B.h - hy - 20) / (rows - 1));
+    const y = hy + 36 + r * ((B.y + B.h - hy - 16) / (rows - 1));
     const k = r / (rows - 1);
-    cloudRow(g, rng.fork('l' + r), pal, B, y, 60 + k * 60, 88 + k * 60, 0.55, mix(pal.cloud, pal.shade, 0.35 - k * 0.3), k > 0.2);
+    cloudRow(g, rng.fork('l' + r), pal, B, y, 56 + k * 34, 80 + k * 40, 0.7, mix(pal.cloud, pal.shade, 0.35 - k * 0.3), r > 0 && r < rows - 1);
   }
 }
 
 export default {
   id: 'clouds',
   name: 'Облака',
-  paint(g, rng) {
+  paint(g, rng0) {
+    const rng = new RNG(hashString(rng0.s + ':clouds'));
     const pal = pickPalette(rng, PALS);
     pal.night = pal.top[2] < 130 && pal.top[0] < 80;
     const variant = rng.int(0, 2);

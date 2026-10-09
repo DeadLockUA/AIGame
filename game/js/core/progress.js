@@ -16,7 +16,7 @@ import { placeFinds } from '../wash/dirtgen.js';
 export const SEASONS = [s01, s02, s03, s04, s05, s06, s07, s08, s09, s10];
 export const THRESHOLD = 70;
 // Подписчики, необходимые для открытия района.
-export const FOLLOWER_REQ = [0, 60, 190, 400, 700, 1100, 1600, 2250, 3000, 3900];
+export const FOLLOWER_REQ = [0, 70, 240, 520, 920, 1450, 2150, 3000, 4000, 5200];
 // Типы грязи, открытые к сезону (накопительно).
 export const DIRT_BY_SEASON = [
   ['dust', 'hair', 'mud'],
@@ -47,12 +47,14 @@ export const QUIRK_INFO = {
 };
 
 const round5 = (n) => Math.max(20, Math.round(n / 5) * 5);
+export const LIMIT_MUL = 1.35, LIMIT_ADD = 10;
+const limitFor = (par) => round5(par * LIMIT_MUL + LIMIT_ADD);
 
 /** Профиль грязи: слои по типам. d — сквозная сложность 0..59, avail — открытые типы. */
 export function makeProfile(d, focus, avail, rng) {
   const u = clamp(d / 59, 0, 1);
-  const cover = 0.30 + 0.38 * u;
-  const amt = 0.6 + 0.38 * u;
+  const cover = 0.30 + 0.55 * u;
+  const amt = 0.6 + 0.4 * u;
   const layers = [{ type: 'dust', cover: 0.35 + 0.25 * u, amt: 0.55 + 0.25 * u }];
   const scale = { dust: 1, hair: 0.8, sand: 0.9, mud: 0.9, grease: 0.7, stain: 0.55, deep: 0.9, mold: 0.65 };
   const set = new Set(['dust']);
@@ -63,7 +65,7 @@ export function makeProfile(d, focus, avail, rng) {
   }
   // «разнообразие»: до двух дополнительных типов
   const extra = avail.filter((t) => !set.has(t));
-  const nExtra = u < 0.2 ? 0 : u < 0.5 ? 1 : 2;
+  const nExtra = u < 0.2 ? 0 : u < 0.45 ? 1 : u < 0.75 ? 2 : 3;
   for (let i = 0; i < nExtra && extra.length; i++) {
     const t = extra.splice(rng.int(0, extra.length - 1), 1)[0];
     set.add(t);
@@ -115,7 +117,7 @@ export function buildStoryOrder(season, idx) {
     title: so.title, style: so.style, client: so.client, intro: so.intro, success: so.success, partial: so.partial, fail: so.fail,
     caption: so.caption, dirtFocus: focus, quirks: so.quirks.map((q) => quirkParams(q, u)), absurd,
     finds: placeFinds(so.finds.slice(0, FIND_COUNT_BY_SEASON(u)), seed), findIds: so.finds,
-    profile, par, limit: round5(par * 1.5 + 12), pay, cost,
+    profile, par, limit: limitFor(par), pay, cost,
   };
 }
 
@@ -150,7 +152,7 @@ export function buildSideOrder(state, texts, n) {
     title: absurd ? 'Странный заказ' : 'Заказ с доски', style, client: { name: client.name, role: client.role, avatar: avatarFor(client.name) },
     intro: [brief.text], success: [], partial: [], fail: [], caption: '',
     dirtFocus: focus, quirks: quirk, absurd,
-    finds: [], findIds: [], profile, par, limit: round5(par * 1.5 + 12),
+    finds: [], findIds: [], profile, par, limit: limitFor(par),
     pay: round5((cost * 2.1 + 35 + 11 * d) * (absurd ? 1.3 : 1)), cost, n,
   };
 }

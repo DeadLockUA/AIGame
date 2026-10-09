@@ -1,6 +1,8 @@
 // Роботы: милые мордочки, шестерёнки, болты, дорожки схем, лампочки. Кайма из заклёпок и плат.
 import { CW, CH, css, mix, darken, lighten, pickPalette, mirrorX } from '../kit.js';
 
+import { RNG, hashString } from '../../util.js';
+
 const TAU = Math.PI * 2;
 
 const PALS = [
@@ -308,7 +310,8 @@ function compMachine(g, rng, pal, B) {
 export default {
   id: 'robots',
   name: 'Роботы',
-  paint(g, rng) {
+  paint(g, rng0) {
+    const rng = new RNG(hashString(rng0.s + ':robots'));
     const pal = pickPalette(rng, PALS);
     const variant = rng.int(0, 2);
     const inset = border(g, pal, rng, variant);
