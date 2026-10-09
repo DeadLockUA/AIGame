@@ -115,6 +115,10 @@ function tabOrders() {
   if (sid !== state.season) {
     body.appendChild(h('div', { class: 'card row sb' }, h('span', { class: 'muted' }, 'Ты смотришь другой район.'), h('button', { class: 'btn sm teal', onClick: () => { ST.enterSeason(state, sid); A.save(); viewSeason = sid; renderBody(); } }, 'Работать здесь')));
   }
+  const newDirt = sid >= 2 && sid <= 5 ? [['sand', 'grease'], ['stain'], ['deep'], ['mold']][sid - 2] : null;
+  if (newDirt) {
+    body.appendChild(h('div', { class: 'card', style: { background: '#fff4d6' } }, h('b', null, 'Новое в районе'), h('div', { class: 'chips', style: { margin: '6px 0' } }, newDirt.map((t) => h('span', { class: 'chip' }, dirtDot(t), dirtName(t)))), h('div', { class: 'muted' }, newDirt.map((t) => `${dirtName(t)}: ${DIRT.find((d) => d.id === t).hint.toLowerCase()}.`).join(' '))));
+  }
   body.appendChild(h('div', { class: 'card' }, h('div', { class: 'row sb' }, h('b', null, 'Заказы района'), h('b', null, `${doneN} / 6`)), h('div', { class: 'bar', style: { marginTop: '6px' } }, h('i', { style: { width: (doneN / 6) * 100 + '%' } })), h('div', { class: 'muted', style: { marginTop: '6px' } }, season.blurb)));
 
   // переход в следующий район
@@ -224,6 +228,8 @@ function tabShop() {
 function tabWorkshop() {
   const state = A.state;
   body.appendChild(h('div', { class: 'h2' }, 'Мастерская'));
+  const owned = TEXTS.decor.filter((d) => state.owned.decor.includes(d.id));
+  body.appendChild(h('div', { class: 'card shelf' }, h('div', { class: 'shelfrow' }, icon('cat', 'big'), owned.length ? owned.map((d) => h('span', { class: 'deco', title: d.name }, d.emoji)) : h('span', { class: 'muted' }, 'Пока голые стены. Купи декор ниже: кот оценит, подписчики тоже.'))));
   WORKSHOP.forEach((w) => {
     const l = lvl(state, w.id), c = ST.upgradeCost(state, w.id);
     body.appendChild(h('div', { class: 'card' }, h('div', { class: 'row' },
