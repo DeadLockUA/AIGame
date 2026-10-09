@@ -1,4 +1,4 @@
-// Настройки, достижения, коллекция, о игре.
+// Настройки, достижения, коллекция, «Об игре».
 import { h, icon, toast } from './dom.js';
 import { A } from './app.js';
 import { audio } from '../audio/audio.js';

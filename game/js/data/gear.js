@@ -38,19 +38,19 @@ export const APPLICATORS = [
 
 // Инструменты смыва. pressure — сила, flow — расход воды, steam — паровой.
 export const RINSERS = [
-  { id: 'r_can',   name: 'Лейка «Бабушкина»', price: 0,    rep: 0, radius: 7,  pressure: 0.9, flow: 0.8, steam: false, tank: 60,  desc: 'Мягкий душ. Не торопит, не спешит.' },
-  { id: 'r_hose',  name: 'Шланг «Змей»',     price: 160,  rep: 0, radius: 5,  pressure: 1.2, flow: 1.0, steam: false, tank: 80,  desc: 'Нормальная струя. Работяга.' },
+  { id: 'r_can',   name: 'Лейка «Бабушкина»', price: 0,    rep: 0, radius: 7,  pressure: 0.9, flow: 0.8, steam: false, tank: 60,  desc: 'Мягкий душ без спешки и нервов.' },
+  { id: 'r_hose',  name: 'Шланг «Змей»',     price: 160,  rep: 0, radius: 5,  pressure: 1.2, flow: 1.0, steam: false, tank: 80,  desc: 'Ровная струя. Работяга.' },
   { id: 'r_storm', name: 'Мойка «Шторм»',     price: 760,  rep: 0, radius: 4,  pressure: 2.2, flow: 1.2, steam: false, tank: 100, desc: 'Узкая и злая струя. Удержание даёт ещё больше напора.' },
   { id: 'r_dragon', name: 'Паровой «Дракон»', price: 1700, rep: 2, radius: 6,  pressure: 1.2, flow: 0.5, steam: true,  tank: 120, desc: 'Горячий пар берёт жир, плесень и въевшееся. Вода не нужна, нужен пар.' },
-  { id: 'r_rain',  name: 'Дождеватель «Ливень»', price: 2700, rep: 4, radius: 12, pressure: 1.0, flow: 2.0, steam: false, tank: 200, desc: 'Накрывает огромную площадь. Воды любит много.' },
+  { id: 'r_rain',  name: 'Дождеватель «Ливень»', price: 2700, rep: 4, radius: 12, pressure: 1.0, flow: 2.0, steam: false, tank: 200, desc: 'Накрывает огромную площадь. Воду любит в больших количествах.' },
 ];
 
 // Средства. aff — сродство к типам грязи (по порядку DIRT), rate — скорость, dwell — сколько секунд «настаивать».
 export const PRODUCTS = [
   { id: 'p_eco',    name: 'Эко-гель «Травка»',    price: 1,  rep: 0, rate: 0.45, dwell: 2.0, aff: [0.5, 0.2, 0.2, 0.5, 0.25, 0.25, 0.25, 0.1], color: [196, 232, 190], desc: 'Дёшево и почти безвредно. Но и силы маловато.' },
-  { id: 'p_soap',   name: 'Мыло «Ромашка»',       price: 2,  rep: 0, rate: 0.8, dwell: 2.0, aff: [0.7, 0.4, 0.4, 1.0, 0.35, 0.4, 0.35, 0.1], color: [250, 246, 220], desc: 'Универсальное. Особенно по грязи.' },
+  { id: 'p_soap',   name: 'Мыло «Ромашка»',       price: 2,  rep: 0, rate: 0.8, dwell: 2.0, aff: [0.7, 0.4, 0.4, 1.0, 0.35, 0.4, 0.35, 0.1], color: [250, 246, 220], desc: 'Универсальное. Особенно хорошо берёт мокрую грязь.' },
   { id: 'p_degreaser', name: 'Обезжириватель «Жиронет»', price: 4, rep: 0, rate: 1.0, dwell: 2.5, aff: [0.3, 0.3, 0.2, 0.7, 1.4, 0.55, 0.6, 0.1], color: [255, 238, 150], desc: 'Растворяет жир без лишней суеты.' },
-  { id: 'p_enzyme', name: 'Энзим «Пятновыводец»', price: 5,  rep: 0, rate: 1.0, dwell: 3.5, aff: [0.2, 0.2, 0.1, 0.55, 0.5, 1.5, 0.7, 0.2], color: [255, 214, 232], desc: 'Любит кофе, вино и чернила. Нужно выдержать.' },
+  { id: 'p_enzyme', name: 'Энзим «Пятновыводец»', price: 5,  rep: 0, rate: 1.0, dwell: 3.5, aff: [0.2, 0.2, 0.1, 0.55, 0.5, 1.5, 0.7, 0.2], color: [255, 214, 232], desc: 'Любит кофе, вино и чернила. Даёшь настояться — получаешь результат.' },
   { id: 'p_antimold', name: 'Антиплесень «Грибок-стоп»', price: 6, rep: 0, rate: 1.0, dwell: 3.0, aff: [0.1, 0.1, 0.1, 0.4, 0.2, 0.2, 0.5, 1.5], color: [196, 238, 255], desc: 'Против плесени и сырости.' },
   { id: 'p_oxy',    name: 'Оксипена «Атом»',      price: 11, rep: 1, rate: 1.2, dwell: 3.0, aff: [0.8, 0.6, 0.5, 1.0, 1.0, 1.1, 1.4, 0.9], color: [214, 234, 255], desc: 'Дорого и сердито. Берёт почти всё.' },
 ];

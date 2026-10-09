@@ -131,7 +131,7 @@ function tabOrders() {
       } else {
         body.appendChild(h('div', { class: 'card' }, h('div', { class: 'row sb' }, h('b', null, 'До следующего района'), h('span', { class: 'price' }, icon('heart'), `${fmt(state.followers)} / ${fmt(need)}`)),
           h('div', { class: 'bar', style: { marginTop: '6px' } }, h('i', { style: { width: Math.min(100, (state.followers / need) * 100) + '%' } })),
-          h('div', { class: 'muted', style: { marginTop: '6px' } }, 'Подписчики приходят за красивые посты. Бери заказы с доски: от них растёт лента.')));
+          h('div', { class: 'muted', style: { marginTop: '6px' } }, 'Подписчики приходят за красивыми постами. Бери заказы с доски: от них растёт лента.')));
       }
     } else if (state.followers < need) {
       body.appendChild(h('div', { class: 'card muted' }, `Чтобы открыть «${SEASONS[sid].name}», нужны ${fmt(need)} подписчиков и все заказы района (сейчас ${fmt(state.followers)}).`));
@@ -140,7 +140,7 @@ function tabOrders() {
   body.appendChild(h('div', { class: 'h2' }, 'Заказы района', h('small', null, 'сюжетные')));
   orders.forEach((o, i) => { const c = orderCard(o, state); if (i === 0 && !(state.stats.attempts > 0) && sid === 1) c.classList.add('pulse'); body.appendChild(c); });
   if (sid === state.season) {
-    body.appendChild(h('div', { class: 'h2' }, 'Доска заказов', h('small', null, `${boardSlots(state)} места`)));
+    body.appendChild(h('div', { class: 'h2' }, 'Доска заказов', h('small', null, `мест: ${boardSlots(state)}`)));
     if (!state.board.side.length) ST.ensureBoard(state);
     state.board.side.forEach((o) => body.appendChild(orderCard(o, state)));
     body.appendChild(h('div', { class: 'muted', style: { textAlign: 'center', margin: '8px' } }, 'Выполненный заказ заменяется новым. Побочные заказы приносят деньги и подписчиков.'));
@@ -219,8 +219,8 @@ function tabShop() {
     body.appendChild(h('div', { class: 'h2' }, 'Фильтры'));
     FILTERS.filter((f) => filterAvailable(state, f)).forEach((f) => body.appendChild(consRow('filter', f.id, f.name, f.desc, '#c9bba3')));
     body.appendChild(h('div', { class: 'h2' }, 'Вода и пар'));
-    body.appendChild(consRow('water', 'water', 'Вода', 'Нужна лейке, шлангу и душу.', '#6bb6e6'));
-    body.appendChild(consRow('steam', 'steam', 'Пар', 'Для парового очистителя.', '#e8eef3'));
+    body.appendChild(consRow('water', 'water', 'Вода', 'Нужна всем, кроме парового «Дракона».', '#6bb6e6'));
+    body.appendChild(consRow('steam', 'steam', 'Пар', 'Для парового «Дракона».', '#e8eef3'));
   }
 }
 
@@ -282,7 +282,7 @@ function tabMore() {
   body.appendChild(row('trophy', 'Достижения', `${done} из ${ACH.length}`, openAchievements));
   body.appendChild(row('find', 'Коллекция находок', `${Object.keys(state.finds).length} из ${FINDS.length}`, openCollection));
   body.appendChild(row('gear', 'Настройки', 'Звук, вибро, датчики, сохранение', openSettings));
-  body.appendChild(row('info', 'О игре', 'Совет деда Ефима и немного лора', openAbout));
+  body.appendChild(row('info', 'О игре', 'Совет деда Ефима и немного предыстории', openAbout));
   const tip = TEXTS.tips[(state.stats.jobs + 3) % TEXTS.tips.length];
   body.appendChild(h('div', { class: 'card quote' }, icon('cat', 'big'), h('div', null, h('b', null, 'Ворсик говорит:'), h('div', null, tip))));
 }

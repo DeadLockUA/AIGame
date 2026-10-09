@@ -29,7 +29,7 @@ export default [
   { id: 'a_followers_20', name: 'Первые болельщики', desc: 'Набери 20 подписчиков. Среди них — мама и тётя Валя.', check: 'followers', goal: 20, rewardCoins: 60, rewardRep: 0 },
   { id: 'a_followers_100', name: 'Почти знаменитость', desc: 'Набери 100 подписчиков.', check: 'followers', goal: 100, rewardCoins: 200, rewardRep: 1 },
   { id: 'a_followers_500', name: 'Голос района', desc: 'Набери 500 подписчиков.', check: 'followers', goal: 500, rewardCoins: 600, rewardRep: 2 },
-  { id: 'a_followers_2000', name: 'Ковровый инфлюенсер', desc: 'Набери 2000 подписчиков. Эдуард Борисович в ярости.', check: 'followers', goal: 2000, rewardCoins: 1500, rewardRep: 3 },
+  { id: 'a_followers_2000', name: 'Звезда ковровой ленты', desc: 'Набери 2000 подписчиков. Эдуард Борисович в ярости.', check: 'followers', goal: 2000, rewardCoins: 1500, rewardRep: 3 },
 
   // coins
   { id: 'a_coins_500', name: 'Копилка не пуста', desc: 'Накопи 500 монет.', check: 'coins', goal: 500, rewardCoins: 50, rewardRep: 0 },
@@ -37,7 +37,7 @@ export default [
   { id: 'a_coins_30000', name: 'Серьёзный бизнесмен', desc: 'Накопи 30 000 монет. Налоговая смотрит с интересом.', check: 'coins', goal: 30000, rewardCoins: 1200, rewardRep: 2 },
 
   // fast
-  { id: 'a_fast_1', name: 'Не терял ни секунды', desc: 'Вымой ковёр быстрее чем за половину времени.', check: 'fast', goal: 1, rewardCoins: 40, rewardRep: 0 },
+  { id: 'a_fast_1', name: 'Не терял ни секунды', desc: 'Вымой ковёр быстрее, чем за половину времени.', check: 'fast', goal: 1, rewardCoins: 40, rewardRep: 0 },
   { id: 'a_fast_10', name: 'Реактивная пена', desc: 'Сделай 10 быстрых моек.', check: 'fast', goal: 10, rewardCoins: 250, rewardRep: 1 },
   { id: 'a_fast_40', name: 'Молния с ведром', desc: 'Сделай 40 быстрых моек. Кот не успел зевнуть.', check: 'fast', goal: 40, rewardCoins: 900, rewardRep: 2 },
 
@@ -50,10 +50,10 @@ export default [
   { id: 'a_norescue_20', name: 'Без костылей и поблажек', desc: 'Выполни 20 заказов подряд без спасения.', check: 'noRescue', goal: 20, rewardCoins: 600, rewardRep: 2 },
 
   // seasons
-  { id: 'a_seasons_1', name: 'Район покорён', desc: 'Закрой первый сезон. Тополиная машет платочком.', check: 'seasons', goal: 1, rewardCoins: 150, rewardRep: 1 },
-  { id: 'a_seasons_3', name: 'Три района в кармане', desc: 'Закрой 3 сезона.', check: 'seasons', goal: 3, rewardCoins: 400, rewardRep: 2 },
-  { id: 'a_seasons_6', name: 'Полгорода отмыто', desc: 'Закрой 6 сезонов.', check: 'seasons', goal: 6, rewardCoins: 900, rewardRep: 3 },
-  { id: 'a_seasons_10', name: 'Хозяин Площади Ковров', desc: 'Закрой все 10 сезонов. Дед Ефим утирает слезу рукавом.', check: 'seasons', goal: 10, rewardCoins: 2000, rewardRep: 5 },
+  { id: 'a_seasons_1', name: 'Район покорён', desc: 'Закрой первый район. Тополиная машет платочком.', check: 'seasons', goal: 1, rewardCoins: 150, rewardRep: 1 },
+  { id: 'a_seasons_3', name: 'Три района в кармане', desc: 'Закрой 3 района.', check: 'seasons', goal: 3, rewardCoins: 400, rewardRep: 2 },
+  { id: 'a_seasons_6', name: 'Полгорода отмыто', desc: 'Закрой 6 районов.', check: 'seasons', goal: 6, rewardCoins: 900, rewardRep: 3 },
+  { id: 'a_seasons_10', name: 'Хозяин Площади Ковров', desc: 'Закрой все 10 районов. Дед Ефим утирает слезу рукавом.', check: 'seasons', goal: 10, rewardCoins: 2000, rewardRep: 5 },
 
   // absurd
   { id: 'a_absurd_1', name: 'Реальность прогнулась', desc: 'Вымой первый абсурдный ковёр.', check: 'absurd', goal: 1, rewardCoins: 60, rewardRep: 0 },
@@ -61,19 +61,19 @@ export default [
   { id: 'a_absurd_10', name: 'Хранитель безумия', desc: 'Вымой 10 абсурдных ковров.', check: 'absurd', goal: 10, rewardCoins: 800, rewardRep: 3 },
 
   // owned
-  { id: 'a_owned_5', name: 'Полный инвентарь', desc: 'Обзаведись 5 инструментами.', check: 'owned', goal: 5, rewardCoins: 100, rewardRep: 0 },
+  { id: 'a_owned_5', name: 'Полный арсенал', desc: 'Обзаведись 5 инструментами.', check: 'owned', goal: 5, rewardCoins: 100, rewardRep: 0 },
   { id: 'a_owned_12', name: 'Мастерская как лавка', desc: 'Обзаведись 12 инструментами.', check: 'owned', goal: 12, rewardCoins: 500, rewardRep: 2 },
 
   // mods
-  { id: 'a_mods_3', name: 'Тюнинг для щётки', desc: 'Поставь 3 модификатора.', check: 'mods', goal: 3, rewardCoins: 120, rewardRep: 0 },
-  { id: 'a_mods_10', name: 'Инженер с пенным уклоном', desc: 'Поставь 10 модификаторов.', check: 'mods', goal: 10, rewardCoins: 600, rewardRep: 2 },
+  { id: 'a_mods_3', name: 'Тюнинг для щётки', desc: 'Поставь 3 насадки.', check: 'mods', goal: 3, rewardCoins: 120, rewardRep: 0 },
+  { id: 'a_mods_10', name: 'Инженер с пенным уклоном', desc: 'Поставь 10 насадок.', check: 'mods', goal: 10, rewardCoins: 600, rewardRep: 2 },
 
   // decor
-  { id: 'a_decor_3', name: 'Свил гнёздышко', desc: 'Расставь 3 предмета декора. Кот выбрал себе одну подушку.', check: 'decor', goal: 3, rewardCoins: 100, rewardRep: 0 },
+  { id: 'a_decor_3', name: 'Вьём гнёздышко', desc: 'Расставь 3 предмета декора. Кот выбрал себе одну подушку.', check: 'decor', goal: 3, rewardCoins: 100, rewardRep: 0 },
   { id: 'a_decor_12', name: 'Дизайнер из народа', desc: 'Расставь 12 предметов декора.', check: 'decor', goal: 12, rewardCoins: 600, rewardRep: 2 },
 
   // challenges
-  { id: 'a_chal_1', name: 'Принял вызов', desc: 'Пройди первый вызов.', check: 'challenges', goal: 1, rewardCoins: 80, rewardRep: 0 },
+  { id: 'a_chal_1', name: 'Первый вызов', desc: 'Пройди первый вызов.', check: 'challenges', goal: 1, rewardCoins: 80, rewardRep: 0 },
   { id: 'a_chal_10', name: 'Любитель острых ощущений', desc: 'Пройди 10 вызовов.', check: 'challenges', goal: 10, rewardCoins: 500, rewardRep: 2 },
   { id: 'a_chal_25', name: 'Вызов принят, нервы — нет', desc: 'Пройди 25 вызовов.', check: 'challenges', goal: 25, rewardCoins: 1400, rewardRep: 3 },
 
