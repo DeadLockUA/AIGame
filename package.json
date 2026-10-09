@@ -7,6 +7,7 @@
   "scripts": {
     "test": "node --test tests/unit/*.test.mjs",
     "e2e": "node tests/e2e/run.mjs",
+    "e2e:extra": "node tests/e2e/extra.mjs",
     "calibrate": "node tools/calibrate.mjs",
     "precache": "node tools/build-precache.mjs",
     "status": "node tools/status.mjs",

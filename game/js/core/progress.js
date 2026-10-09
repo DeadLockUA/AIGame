@@ -16,7 +16,7 @@ import { placeFinds } from '../wash/dirtgen.js';
 export const SEASONS = [s01, s02, s03, s04, s05, s06, s07, s08, s09, s10];
 export const THRESHOLD = 70;
 // Подписчики, необходимые для открытия района.
-export const FOLLOWER_REQ = [0, 70, 240, 520, 920, 1450, 2150, 3000, 4000, 5200];
+export const FOLLOWER_REQ = [0, 80, 290, 620, 1100, 1750, 2600, 3600, 4800, 6300];
 // Типы грязи, открытые к сезону (накопительно).
 export const DIRT_BY_SEASON = [
   ['dust', 'hair', 'mud'],

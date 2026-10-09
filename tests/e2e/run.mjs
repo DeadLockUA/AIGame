@@ -45,6 +45,15 @@ await pg.waitForTimeout(800);
 await shot('06-wash-start');
 const box = await pg.locator('.wash canvas').boundingBox();
 const X = (f) => box.x + box.width * f, Y = (f) => box.y + box.height * f;
+// раскладка не прыгает при смене фаз
+const sizeOf = async () => { const b2 = await pg.locator('.wash canvas').boundingBox(); return `${Math.round(b2.width)}x${Math.round(b2.height)}@${Math.round(b2.y)}`; };
+const s0 = await sizeOf();
+await pg.click('.phase.apply'); await pg.waitForTimeout(250);
+const s1 = await sizeOf();
+await pg.click('.phase.rinse'); await pg.waitForTimeout(250);
+const s2 = await sizeOf();
+await pg.click('.phase.vacuum'); await pg.waitForTimeout(250);
+ok(s0 === s1 && s1 === s2, `холст не прыгает при смене фаз (${s0} ${s1} ${s2})`);
 // пылесос реальными жестами
 step('пылесос жестами');
 for (let i = 0; i < 4; i++) {

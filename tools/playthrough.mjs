@@ -19,9 +19,18 @@ s.board.seed = 12345;
 ST.ensureBoard(s);
 let t = 0, jobs = 0, sideJobs = 0, fails = 0, rescues = 0;
 const starCount = [0, 0, 0, 0];
+const failIds = {};
 const log = [];
 const seasonStats = {};
 
+function equipBest() {
+  const score = { vacuum: (t) => t.radius * t.power, applicator: (t) => t.radius * t.deposit, rinse: (t) => t.radius * t.pressure };
+  for (const [list, key] of [[VACUUMS, 'vacuum'], [APPLICATORS, 'applicator'], [RINSERS, 'rinse']]) {
+    const owned = list.filter((x) => s.owned.tools.includes(x.id));
+    owned.sort((a, b) => score[key](b) - score[key](a));
+    s.equipped[key] = owned[0].id;
+  }
+}
 function shop() {
   let bought = true;
   while (bought) {
@@ -37,6 +46,7 @@ function shop() {
       const c = ST.upgradeCost(s, w.id);
       if (c && s.coins >= c.coins * 1.5 + 60 && s.rep >= c.rep) { ST.buyUpgrade(s, w.id); bought = true; }
     }
+    equipBest();
     for (const m of MODS) {
       if (ST.canBuyMod(s, m.id).ok && s.coins >= m.price * 2 + 100) { ST.buyMod(s, m.id); bought = true; }
     }
@@ -71,7 +81,7 @@ function runOrder(order) {
   const res = { clean: r.clean, leftFrac: Math.max(0, (limit - r.time) / limit), rescued, finds: r.eng.finds.filter((f) => f.revealed).map((f) => f.id), leftover: left, filterUsed: filter, usedVacuum: true, timeSec: r.time };
   const before = s.coins;
   const out = ST.applyResult(s, order, res, []);
-  if (out.stars === 0) fails++;
+  if (out.stars === 0) { fails++; failIds[order.id] = (failIds[order.id] || 0) + 1; if (failIds[order.id] === 3) console.log('застрял на', order.id, order.quirks.map((q) => q.id).join(','), 'чистота', r.clean.toFixed(1), 'лимит', limit, 'время', r.time.toFixed(0), 'набор', JSON.stringify([s.equipped.vacuum, s.equipped.applicator, s.equipped.rinse]), 'монет', Math.round(s.coins), 'расходники', JSON.stringify(Object.fromEntries(Object.entries(s.inventory.products).map(([k, v]) => [k, +v.toFixed(1)]))), 'вода', s.inventory.water); }
   starCount[out.stars]++;
   const dur = Math.min(r.time, limit + 5) * HUMAN + OVERHEAD;
   t += dur; jobs++;

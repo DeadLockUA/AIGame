@@ -1,6 +1,6 @@
 // Service worker: офлайн-работа. Список файлов лежит в precache.json (генерируется tools/build-precache.mjs).
 const PREFIX = 'chisty-vors-';
-const VERSION = 'cfc07d0b62'; // подставляется tools/build-precache.mjs
+const VERSION = 'b8a0dcd340'; // подставляется tools/build-precache.mjs
 const CACHE = PREFIX + VERSION;
 self.addEventListener('install', (e) => {
   e.waitUntil((async () => {

@@ -24,7 +24,7 @@ jobs:
         with: { node-version: 22 }
       - run: npm install --no-audit --no-fund
       - run: npx playwright install --with-deps chromium
-      - run: CHROME="$(node -e "import('playwright').then(m=>console.log(m.chromium.executablePath()))")" npm run e2e
+      - run: CHROME="$(node -e "import('playwright').then(m=>console.log(m.chromium.executablePath()))")" npm run e2e && CHROME="$(node -e "import('playwright').then(m=>console.log(m.chromium.executablePath()))")" npm run e2e:extra
       - uses: actions/upload-artifact@v4
         if: always()
         with: { name: e2e-shots, path: /tmp/e2e-shots }
