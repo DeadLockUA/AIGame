@@ -70,7 +70,9 @@ export class WashEngine {
     this.filterLoad = 0;
     this.productList = Object.keys(this.stock.products);
     this.used = { products: {}, water: 0, steam: 0 };
-    this.heavy = this.quirks.find((q) => q.id === 'heavy')?.mul ?? 1;
+    this.heavy = (this.quirks.find((q) => q.id === 'heavy')?.mul ?? 1) * (o.heavyExtra ?? 1);
+    this.rateBoost = kit.bonus?.rate ?? 1;
+    this.dryMul = kit.bonus?.dry ?? 1;
     this.initial = 1; // нормирующий вес, считается после заполнения
     this.cleanPct = 0;
     this.blockPrev = new Float32Array(BW * BH);
@@ -318,7 +320,7 @@ export class WashEngine {
       const dwell = prod.dwell * this.app.dwellMul;
       const df = clamp(this.foamAge[i] / dwell, 0, 1);
       if (df < 0.15) continue;
-      const rate = prod.rate * df * Math.sqrt(f) * dt * 0.8;
+      const rate = prod.rate * this.rateBoost * df * Math.sqrt(f) * dt * 0.8;
       for (let t = 0; t < NDIRT; t++) {
         const room = this.dirt[t][i] - this.loose[t][i];
         if (room <= 0) continue;
@@ -327,7 +329,7 @@ export class WashEngine {
       this.foam[i] = Math.max(0, f - dt * 0.006);
     }
     // высыхание
-    for (let i = 0; i < GN; i++) if (this.wet[i] > 0) this.wet[i] = Math.max(0, this.wet[i] - dt * 0.025);
+    for (let i = 0; i < GN; i++) if (this.wet[i] > 0) this.wet[i] = Math.max(0, this.wet[i] - dt * 0.025 * this.dryMul);
     // свет в «темноте»
     if (this.quirks.some((q) => q.id === 'dark')) {
       for (let i = 0; i < GN; i++) if (this.lit[i] > 0) this.lit[i] = Math.max(0, this.lit[i] - dt * 0.14);
