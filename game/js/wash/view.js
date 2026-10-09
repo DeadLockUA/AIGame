@@ -80,10 +80,11 @@ export class WashView {
           const k = 0.15 + 0.85 * df;
           r = 255 + (prod.color[0] * 0.78 - 255) * k; gg = 255 + (prod.color[1] * 0.78 - 255) * k; b = 255 + (prod.color[2] * 0.78 - 255) * k;
         }
-        const hi = ((i * 2654435761) >>> 20) / 4096;
-        const sparkle = hi > 0.9 && f > 0.35 ? 1 : 0;
+        const hh = Math.imul(i ^ (i >>> 5), 2654435761) ^ Math.imul(i >>> 3, 374761393);
+        const hi = ((hh >>> 8) & 0xffff) / 65535;
+        const sparkle = hi > 0.93 && f > 0.18 ? 1 : 0;
         foam[o] = sparkle ? 255 : r; foam[o + 1] = sparkle ? 255 : gg; foam[o + 2] = sparkle ? 255 : b;
-        foam[o + 3] = smoothstep(0.03, 0.5, f) * (sparkle ? 255 : 235);
+        foam[o + 3] = smoothstep(0.02, 0.2, f) * (sparkle ? 255 : 238);
       } else foam[o + 3] = 0;
       // влага
       const w = e.wet[i];

@@ -232,3 +232,18 @@ canvas.thumb.ready { opacity: 1; }
 .card.find { text-align: center; }
 .card.find .ic.big { margin: 4px auto; }
 button.card { width: 100%; font: inherit; color: inherit; }
+
+body.in-wash #toasts { top: calc(var(--sat) + 118px); }
+.hint { top: auto; bottom: 8px; right: 66px; left: 10px; font-size: .8em; }
+@media (max-height: 720px) {
+  .dock { padding: 6px 8px calc(var(--sab) + 6px); border-radius: 18px 18px 0 0; }
+  .phase { padding: 5px 2px 4px; } .phase small { display: none; } .phase .ic { width: 1.6em; height: 1.6em; }
+  .prodrow, .gauge { margin-top: 5px; } .prod { padding: 3px 8px 3px 5px; }
+  .hud { padding-top: calc(var(--sat) + 4px); } .scan { padding-bottom: 3px; }
+  .topbar { padding-top: calc(var(--sat) + 6px); }
+}
+.credits { background: linear-gradient(180deg, #3a2a22, #6b4a34); color: #fff; align-items: center; text-align: center; padding: 30px 20px calc(var(--sab) + 20px); overflow-y: auto; }
+.credits h1 { font-size: 2.2em; margin: 8px 0; }
+.credits .statgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; max-width: 360px; margin: 14px 0; }
+.credits .statgrid div { background: rgba(255,250,240,.12); border-radius: 16px; padding: 10px; }
+.credits .statgrid b { display: block; font-size: 1.5em; }

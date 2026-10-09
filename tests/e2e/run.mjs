@@ -58,23 +58,23 @@ ok(c1 > 3, `чистота растёт от пылесоса (${c1.toFixed(1)}%
 // программная мойка остального
 await pg.evaluate(async () => {
   const w = window.__wash, e = w.eng;
-  const sweep = (ph, ctx, step = 5) => { for (let y = 3; y < 108; y += step) { e.apply(ph, 0, y, 71, y, 1.2, ctx); e.tick(1 / 30); } };
+  const sweep = (ph, ctx, step = 5, ymax = 108) => { for (let y = 3; y < ymax; y += step) { e.apply(ph, 0, y, 71, y, 1.2, ctx); e.tick(1 / 30); } };
   for (let i = 0; i < 6; i++) sweep('vacuum', {});
   w.setPhase('apply');
   const pid = e.productList.sort((a, b) => (e.stock.products[b] || 0) - (e.stock.products[a] || 0))[0];
   for (let i = 0; i < 2; i++) sweep('apply', { product: pid, speed: 40 });
   for (let i = 0; i < 150; i++) e.tick(1 / 30);
   w.setPhase('rinse');
-  for (let i = 0; i < 1; i++) sweep('rinse', {});
+  sweep('rinse', {}, 5, 50);
 });
 await pg.waitForTimeout(600);
 await shot('08-wash-late');
 const c2 = await pg.evaluate(() => window.__wash.eng.cleanPct);
-ok(c2 > 40, `ковёр отмыт (${c2.toFixed(1)}%)`);
+ok(c2 > 30 && c2 < 99, `ковёр отмыт (${c2.toFixed(1)}%)`);
 await pg.click('.hud .hb:last-child');
 await pg.waitForSelector('.overlay .btn');
 await shot('09-confirm');
-await pg.click('.overlay .btn:first-child');
+await pg.locator('.overlay .btn').first().click();
 await pg.waitForSelector('.res');
 await pg.waitForTimeout(900);
 await shot('10-result');

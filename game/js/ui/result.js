@@ -10,7 +10,7 @@ import * as ST from '../core/state.js';
 import { SEASONS, THRESHOLD } from '../core/progress.js';
 import { renderCarpet, CW, FRINGE } from '../carpet/render.js';
 import { showHub } from './hub.js';
-import { showSeasonStory } from './story.js';
+import { showSeasonStory, showCredits } from './story.js';
 import { saveState } from '../core/storage.js';
 
 export function compareEl(before, afterCanvas) {
@@ -77,7 +77,7 @@ export function showResult({ order, challenges, res }) {
       h('div', { class: 'foot', style: { padding: '10px 14px calc(var(--sab) + 12px)', borderTop: '2px solid var(--line)', background: 'var(--paper)' } },
         h('button', { class: 'btn block', onClick: async () => {
           screen.remove();
-          if (out.seasonDone) { const s = SEASONS[order.season - 1]; await showSeasonStory(s, 'outro'); }
+          if (out.seasonDone) { const s = SEASONS[order.season - 1]; await showSeasonStory(s, 'outro'); if (order.season === 10) await showCredits(state); }
           showHub(); resolve();
         } }, 'Дальше')));
     root.appendChild(screen);

@@ -193,7 +193,8 @@ export class WashEngine {
       for (let i = i0; i <= i1; i++) {
         const d2 = (i - x) ** 2 + (j - y) ** 2;
         if (d2 > r2) continue;
-        fn(j * GW + i, 1 - Math.sqrt(d2) / r * 0.55);
+        const q = d2 / r2;
+        fn(j * GW + i, (1 - q) * 1.5 + 0.02);
       }
     }
   }

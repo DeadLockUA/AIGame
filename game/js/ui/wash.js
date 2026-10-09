@@ -88,6 +88,7 @@ export function runWash({ state, order, challenges = [], root, onQuit }) {
 
     const screen = h('div', { class: 'screen wash' }, hud, scanEl, stage, dock);
     root.appendChild(screen);
+    document.body.classList.add('in-wash');
 
     // размеры
     let view;
@@ -268,7 +269,7 @@ export function runWash({ state, order, challenges = [], root, onQuit }) {
       const left = { products: { ...eng.stock.products }, water: eng.stock.water / (challenges.some((c) => c.id === 'c_dry') ? 0.5 : 1), steam: eng.stock.steam };
       // не возвращаем «вернувшуюся» воду выше исходного запаса
       left.water = Math.min(left.water, state.inventory.water);
-      screen.remove();
+      document.body.classList.remove('in-wash'); screen.remove();
       resolve({
         abandoned, clean: eng.cleanPct, leftFrac: eng.timeLeft / eng.limit, rescued, rescues,
         finds: [...collected, ...auto], timeSec: eng.time, usedVacuum: eng.stats.strokes.vacuum > 1.5,
@@ -326,7 +327,7 @@ export function runWash({ state, order, challenges = [], root, onQuit }) {
     });
     function abandon() {
       ended = true; stopTool(); audio.musicStop(0.5); cancelAnimationFrame(raf); ro.disconnect(); sensors.setShakeHandler(null);
-      screen.remove(); onQuit && onQuit(); resolve({ abandoned: true, quit: true });
+      document.body.classList.remove('in-wash'); screen.remove(); onQuit && onQuit(); resolve({ abandoned: true, quit: true });
     }
 
     // старт

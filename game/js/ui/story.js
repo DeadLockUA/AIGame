@@ -21,3 +21,20 @@ export function showSeasonStory(season, which) {
     if (!lines.length) { screen.remove(); resolve(); }
   });
 }
+
+// Финальные титры после последнего района. Игра продолжается: доска заказов бесконечна.
+export function showCredits(state) {
+  return new Promise((resolve) => {
+    const st = state.stats;
+    const hours = Math.max(0.1, (state.playMs || 0) / 3600000);
+    const stat = (v, l) => h('div', null, h('b', null, String(v)), h('span', { style: { opacity: .75, fontSize: '.8em' } }, l));
+    const screen = h('div', { class: 'full story credits' },
+      h('div', { style: { fontSize: '3em' } }, '🏆'),
+      h('h1', null, 'Цикл пройден'),
+      h('p', { style: { maxWidth: '320px', opacity: .9 } }, 'Площадь Ковров гудит, дед Ефим наверняка улыбается, кот лежит на самом чистом ковре. Ковры будут всегда, и доска заказов тоже.'),
+      h('div', { class: 'statgrid' }, stat(st.jobs, 'заказов'), stat(st.stars3, 'идеальных'), stat(Object.keys(state.finds).length, 'находок'), stat(state.followers, 'подписчиков'), stat(Math.round(state.coins), 'монет'), stat(hours.toFixed(1) + ' ч', 'в игре')),
+      h('p', { style: { opacity: .7, fontSize: '.85em' } }, 'Нарисовано, озвучено и написано ИИ-агентами.'),
+      h('button', { class: 'btn gold', style: { minWidth: '220px' }, onClick: () => { screen.remove(); resolve(); } }, 'Играть дальше'));
+    A.root.appendChild(screen);
+  });
+}
