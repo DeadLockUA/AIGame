@@ -330,6 +330,7 @@ export function runWash({ state, order, challenges = [], root, onQuit }) {
     }
 
     // старт
+    window.__wash = { eng, get view() { return view; }, setPhase, finish };
     buildScan(); refreshProducts(); setPhase(phase);
     let beforeSnap = null;
     audio.musicStart(order.season); audio.musicSetClean(0);

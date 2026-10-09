@@ -374,23 +374,23 @@ class Engine {
       case 'back': this._blip(t, 560, 380, 0.11, 0.2, { filter: { type: 'lowpass', f: 2500 } }); break;
       case 'buy': this._bell(t, 988, 0.4, 0.2); this._bell(t + 0.09, 1319, 0.55, 0.22); this._bell(t + 0.2, 1760, 0.6, 0.12); break;
       case 'error':
-        this._tone(t, 233, 0.16, 0.22, { partials: [{ type: 'triangle' }], filter: { type: 'lowpass', f: 900 } });
-        this._tone(t + 0.13, 196, 0.24, 0.22, { partials: [{ type: 'triangle' }], filter: { type: 'lowpass', f: 800 } }); break;
+        this._tone(t, 233, 0.16, 0.16, { partials: [{ type: 'triangle' }], filter: { type: 'lowpass', f: 900 } });
+        this._tone(t + 0.13, 196, 0.24, 0.16, { partials: [{ type: 'triangle' }], filter: { type: 'lowpass', f: 800 } }); break;
       case 'coin': this._bell(t, 1319, 0.22, 0.18); this._bell(t + 0.06, 1760, 0.45, 0.2); break;
       case 'star': [880, 1175, 1568].forEach((f, i) => this._bell(t + i * 0.07, f, 0.55, 0.16)); break;
       case 'success':
-        [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => this._bell(t + i * 0.1, f, 0.9, 0.18));
-        [261.63, 329.63, 392].forEach((f) => this._tone(t + 0.28, f, 1.2, 0.07, { atk: 0.05, rel: 0.7, partials: [{ type: 'triangle' }], filter: { type: 'lowpass', f: 1500 } }));
+        [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => this._bell(t + i * 0.1, f, 0.9, 0.11));
+        [261.63, 329.63, 392].forEach((f) => this._tone(t + 0.28, f, 1.2, 0.045, { atk: 0.05, rel: 0.7, partials: [{ type: 'triangle' }], filter: { type: 'lowpass', f: 1500 } }));
         break;
       case 'fail':
         [329.63, 261.63, 220].forEach((f, i) => this._tone(t + i * 0.2, f, 0.55, 0.2, { atk: 0.02, partials: [{ type: 'triangle' }], filter: { type: 'lowpass', f: 1100 } })); break;
       case 'open':
-        this._noiseHit(t, 0.28, 0.1, [{ type: 'bandpass', f: 500, fEnd: 2400, q: 0.9, fT: 0.26 }], { atk: 0.08 });
-        this._blip(t, 440, 587, 0.14, 0.12); break;
+        this._noiseHit(t, 0.28, 0.17, [{ type: 'bandpass', f: 500, fEnd: 2400, q: 0.9, fT: 0.26 }], { atk: 0.08 });
+        this._blip(t, 440, 587, 0.14, 0.18); break;
       case 'close':
-        this._noiseHit(t, 0.25, 0.09, [{ type: 'bandpass', f: 2200, fEnd: 450, q: 0.9, fT: 0.23 }], { atk: 0.05 });
-        this._blip(t, 587, 440, 0.12, 0.11); break;
-      case 'tick': this._tone(t, 1250, 0.03, 0.09); break;
+        this._noiseHit(t, 0.25, 0.16, [{ type: 'bandpass', f: 2200, fEnd: 450, q: 0.9, fT: 0.23 }], { atk: 0.05 });
+        this._blip(t, 587, 440, 0.12, 0.17); break;
+      case 'tick': this._tone(t, 1250, 0.03, 0.2); break;
       case 'tab': this._blip(t, 700, 740, 0.06, 0.15); this._blip(t + 0.05, 880, 900, 0.07, 0.13); break;
       default: return false;
     }
@@ -408,19 +408,19 @@ class Engine {
         break;
       }
       case 'find':
-        this._bell(t, 784, 0.6, 0.17); this._bell(t + 0.12, 1175, 0.9, 0.17);
+        this._bell(t, 784, 0.6, 0.14); this._bell(t + 0.12, 1175, 0.9, 0.14);
         this._noiseHit(t, 0.5, 0.025, [{ type: 'highpass', f: 5000 }, { type: 'lowpass', f: 9000 }], { atk: 0.15 }); break;
       case 'collect':
-        [659.25, 783.99, 1046.5, 1318.5].forEach((f, i) => this._bell(t + i * 0.07, f, 0.6, 0.15));
-        this._bell(t + 0.32, 1760, 0.7, 0.1); break;
+        [659.25, 783.99, 1046.5, 1318.5].forEach((f, i) => this._bell(t + i * 0.07, f, 0.6, 0.12));
+        this._bell(t + 0.32, 1760, 0.7, 0.08); break;
       case 'timeup':
-        this._tone(t, 220, 1.4, 0.2, { partials: [{ type: 'sine' }, { type: 'sine', ratio: 2.76, gain: 0.25, dec: 0.5 }], filter: { type: 'lowpass', f: 1800 } });
-        this._tone(t + 0.25, 164.8, 1.4, 0.18, { partials: [{ type: 'sine' }, { type: 'sine', ratio: 2.76, gain: 0.2, dec: 0.5 }], filter: { type: 'lowpass', f: 1500 } }); break;
+        this._tone(t, 220, 1.4, 0.15, { partials: [{ type: 'sine' }, { type: 'sine', ratio: 2.76, gain: 0.25, dec: 0.5 }], filter: { type: 'lowpass', f: 1800 } });
+        this._tone(t + 0.25, 164.8, 1.4, 0.13, { partials: [{ type: 'sine' }, { type: 'sine', ratio: 2.76, gain: 0.2, dec: 0.5 }], filter: { type: 'lowpass', f: 1500 } }); break;
       case 'rescue':
-        [392, 493.9, 587.3].forEach((f) => this._tone(t, f, 1.1, 0.1, { atk: 0.35, rel: 0.6, partials: [{ type: 'triangle' }], filter: { type: 'lowpass', f: 1800 } }));
-        this._bell(t + 0.45, 1174.7, 0.9, 0.14); break;
+        [392, 493.9, 587.3].forEach((f) => this._tone(t, f, 1.1, 0.06, { atk: 0.35, rel: 0.6, partials: [{ type: 'triangle' }], filter: { type: 'lowpass', f: 1800 } }));
+        this._bell(t + 0.45, 1174.7, 0.9, 0.09); break;
       case 'regrow':
-        this._tone(t, 120, 0.7, 0.2, { atk: 0.1, partials: [{ type: 'sine', slideTo: 230, slideT: 0.6 }, { type: 'triangle', gain: 0.3, slideTo: 230, slideT: 0.6 }], filter: { type: 'lowpass', f: 500 } });
+        this._tone(t, 120, 0.7, 0.15, { atk: 0.1, partials: [{ type: 'sine', slideTo: 230, slideT: 0.6 }, { type: 'triangle', gain: 0.3, slideTo: 230, slideT: 0.6 }], filter: { type: 'lowpass', f: 500 } });
         this._noiseHit(t, 0.6, 0.06, [{ type: 'bandpass', f: 300, fEnd: 1100, q: 1.2, fT: 0.55 }], { atk: 0.15 });
         this._blip(t + 0.25, 260, 520, 0.05, 0.08); this._blip(t + 0.4, 300, 600, 0.05, 0.08); break;
       case 'ghost':
@@ -431,7 +431,7 @@ class Engine {
         this._tone(t, 90, 0.2, 0.15, { partials: [{ type: 'sine', slideTo: 55, slideT: 0.15 }] }); break;
       case 'bubble': {
         const f = 350 + r() * 500;
-        this._blip(t, f, f * 2.4, 0.05 + r() * 0.04, 0.12, { pan: (r() - 0.5) * 0.8 }); break;
+        this._blip(t, f, f * 2.4, 0.05 + r() * 0.04, 0.24, { pan: (r() - 0.5) * 0.8 }); break;
       }
       case 'dirty':
         this._tone(t, 180, 0.3, 0.2, { partials: [{ type: 'sawtooth', slideTo: 80, slideT: 0.28 }], filter: { type: 'lowpass', f: 600, fEnd: 200 } });
@@ -458,14 +458,14 @@ class Engine {
     const gn = (v) => { const g = c.createGain(); g.gain.value = v; nodes.push(g); return g; };
     const P = {};
     if (kind === 'vacuum') {
-      const n = ns(true), lp = bq('lowpass', 500, 0.6), ng = gn(0.4);
+      const n = ns(true), lp = bq('lowpass', 500, 0.6), ng = gn(0.8);
       n.connect(lp); lp.connect(ng); ng.connect(out);
-      const o1 = osc('sawtooth', 60), o2 = osc('triangle', 121), hl = bq('lowpass', 280, 0.8), hg = gn(0.3);
+      const o1 = osc('sawtooth', 60), o2 = osc('triangle', 121), hl = bq('lowpass', 280, 0.8), hg = gn(0.12);
       o1.connect(hl); o2.connect(hl); hl.connect(hg); hg.connect(out);
       const o3 = osc('sine', 420), wg = gn(0.01); o3.connect(wg); wg.connect(out);
       Object.assign(P, { o1, o2, o3, lp, hl, ng, hg });
     } else if (kind === 'apply') {
-      const n = ns(false), hp = bq('highpass', 1800, 0.6), bp = bq('bandpass', 4200, 0.7), fl = gn(0.75), lf = osc('sine', 7.3), lg = gn(0.25), lf2 = osc('sine', 11.9), lg2 = gn(0.12);
+      const n = ns(false), hp = bq('highpass', 1200, 0.6), bp = bq('bandpass', 3000, 0.6), fl = gn(0.75), lf = osc('sine', 7.3), lg = gn(0.25), lf2 = osc('sine', 11.9), lg2 = gn(0.12);
       n.connect(hp); hp.connect(bp); bp.connect(fl);
       lf.connect(lg); lg.connect(fl.gain); lf2.connect(lg2); lg2.connect(fl.gain);
       const n2 = ns(true), lp2 = bq('lowpass', 900, 0.5), g2 = gn(0.35); n2.connect(lp2); lp2.connect(g2); g2.connect(out);
@@ -477,7 +477,7 @@ class Engine {
       const n2 = ns(true), lp2 = bq('lowpass', 650, 0.5), g2 = gn(0.6); n2.connect(lp2); lp2.connect(g2); g2.connect(out);
       Object.assign(P, { bp, g, g2 });
     } else {
-      const n = ns(false), hp = bq('highpass', 3200, 0.6), bp = bq('peaking', 6000, 0.6), lp = bq('lowpass', 9500, 0.5), fl = gn(0.85), lf = osc('sine', 0.45), lg = gn(0.15);
+      const n = ns(false), hp = bq('highpass', 2200, 0.6), bp = bq('peaking', 4500, 0.6), lp = bq('lowpass', 7500, 0.6), fl = gn(0.85), lf = osc('sine', 0.45), lg = gn(0.15);
       bp.gain.value = 4;
       n.connect(hp); hp.connect(bp); bp.connect(lp); lp.connect(fl); fl.connect(out); lf.connect(lg); lg.connect(fl.gain);
       const n2 = ns(true), lp2 = bq('lowpass', 1400, 0.5), g2 = gn(0.3); n2.connect(lp2); lp2.connect(g2); g2.connect(out);
@@ -504,24 +504,24 @@ class Engine {
       set(P.o1.frequency, f0, 0.15); set(P.o2.frequency, f0 * 2.01, 0.15); set(P.o3.frequency, f0 * 7, 0.15);
       set(P.lp.frequency, 380 + 1900 * (0.35 * s + 0.65 * i), 0.1);
       set(P.hl.frequency, 220 + 200 * s, 0.1);
-      set(P.ng.gain, 0.12 + 0.5 * i, 0.08);
-      level = (0.2 + 0.8 * i) * 0.55;
+      set(P.ng.gain, 0.3 + 0.8 * i, 0.08);
+      level = (0.2 + 0.8 * i) * 0.2;
     } else if (kind === 'apply') {
-      set(P.bp.frequency, 3600 + 1800 * s, 0.1);
+      set(P.bp.frequency, 2400 + 1400 * s, 0.1);
       set(P.g2.gain, 0.2 + 0.3 * i, 0.1);
-      level = Math.pow(i, 0.8) * 0.55;
+      level = Math.pow(i, 0.8) * 0.22;
       T.bubT += dt * i * (4 + 8 * s);
       while (T.bubT >= 1) { T.bubT -= 1; this._blip(now + 0.005, 300 + this.rnd() * 700, 1200 + this.rnd() * 800, 0.03 + this.rnd() * 0.03, 0.035 * (0.5 + i), { pan: (this.rnd() - 0.5) * 0.7 }); }
     } else if (kind === 'rinse') {
       set(P.bp.frequency, 1700 + 1700 * s + 600 * i, 0.1);
       set(P.g2.gain, 0.35 + 0.4 * i, 0.1);
-      level = Math.pow(i, 0.7) * 0.5;
+      level = Math.pow(i, 0.7) * 0.2;
       T.bubT += dt * i * 3;
       while (T.bubT >= 1) { T.bubT -= 1; this._blip(now + 0.005, 500 + this.rnd() * 600, 1400 + this.rnd() * 600, 0.03, 0.025, { pan: (this.rnd() - 0.5) * 0.7 }); }
     } else {
-      set(P.bp.frequency, 5200 + 2200 * s, 0.1);
+      set(P.bp.frequency, 4000 + 1500 * s, 0.1);
       set(P.g2.gain, 0.15 + 0.3 * i, 0.1);
-      level = Math.pow(i, 0.7) * 0.4;
+      level = Math.pow(i, 0.7) * 0.18;
     }
     set(T.out.gain, level, 0.05);
   }

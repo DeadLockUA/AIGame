@@ -225,3 +225,10 @@ input[type=range].slider { width: 150px; accent-color: var(--terra); }
 .col-blind .chip i, .col-blind .prod i { border: 2px solid #000; }
 @media (min-width: 560px) { #app { border-radius: 28px; top: 12px; bottom: 12px; } }
 @media (prefers-reduced-motion: reduce) { * { animation-duration: .01ms !important; } }
+canvas.thumb { display: block; width: 54px; height: 88px; flex: none; border-radius: 6px; box-shadow: var(--shadow-s); background: #e7d6b8; opacity: .0; transition: opacity .3s; }
+canvas.thumb.ready { opacity: 1; }
+.ic.big { width: 2.2em; height: 2.2em; }
+.quote .ic.big { flex: none; }
+.card.find { text-align: center; }
+.card.find .ic.big { margin: 4px auto; }
+button.card { width: 100%; font: inherit; color: inherit; }

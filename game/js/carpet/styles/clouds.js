@@ -155,19 +155,35 @@ function border(g, pal, rng, variant) {
   for (let y = 0; y < CH; y += 6) { g.beginPath(); for (let x = 0; x <= CW; x += 6) { const yy = y + Math.sin(x * 0.2 + y * 0.3) * 1.6; x ? g.lineTo(x, yy) : g.moveTo(x, yy); } g.stroke(); }
   g.restore();
   for (const [o, w, c] of [[x0, 2.5, pal.border2], [x0 + 3.5, 1.5, darken(pal.border, 0.4)], [x0 + band, 1.5, darken(pal.border, 0.4)], [x0 + band + 3, 2.5, pal.border2]]) { g.strokeStyle = css(c); g.lineWidth = w; g.strokeRect(o, o, CW - 2 * o, CH - 2 * o); }
-  const small = { ...pal, ink: darken(pal.border, 0.35) };
-  walk(34, 34, (x, y, ang, i) => {
+  const ink = darken(pal.border, 0.38);
+  const bump = (x, y, r, col) => { g.beginPath(); g.arc(x, y, r, 0, TAU); g.fillStyle = css(col); g.fill(); };
+  const row = (x, y, r, col, lw) => { g.beginPath(); g.arc(x, y, r, 0, TAU); line(g, ink, lw, 0.75); };
+  walk(15, 31, (x, y, ang, i) => {
     g.save(); g.translate(x, y); g.rotate(ang);
-    // облачко с основанием к центру каймы (низ — к центру ковра)
-    g.translate(0, 7); cloud(g, 30, small, i % 3, false, i % 2 ? pal.border2 : mix(pal.border2, pal.cloud, 0.6));
+    // задний ряд (крупнее) и передний ряд, внутрь ковра — «волна» облачков
+    g.beginPath(); g.arc(0, 0, 10.5, 0, TAU); line(g, ink, 3.2, 0.7);
+    g.beginPath(); g.arc(0, 0, 10.5, 0, TAU); g.fillStyle = css(mix(pal.border2, pal.cloud, 0.2 + 0.3 * ((i % 3) / 2))); g.fill();
     g.restore();
   });
-  // звёздочки в промежутках
-  walk(34, 34, (x, y, ang, i) => {
-    const nx = Math.cos(ang), ny = Math.sin(ang);
-    const px = x + nx * 17, py = y + ny * 17;
-    if (variant === 1) { g.save(); g.translate(px, py); g.rotate(ang); g.beginPath(); g.arc(0, -9, 3, 0, TAU); g.fillStyle = css(RAINBOW[i % 6]); g.fill(); line(g, small.ink, 0.8); g.restore(); }
-    else sparkle(g, px, py - (ang === 0 ? 8 : ang === Math.PI ? -8 : 0) * 0, 3.4, pal.border2, 0.9);
+  walk(15, 31, (x, y, ang, i) => {
+    g.save(); g.translate(x, y); g.rotate(ang); g.translate(7.5, 0); g.rotate(0);
+    g.restore();
+  });
+  // передняя волна: полукруги, выглядывающие снизу
+  walk(15, 31, (x, y, ang, i) => {
+    g.save(); g.translate(x, y); g.rotate(ang);
+    const col = [pal.cloud, mix(pal.border2, pal.cloud, 0.5)][i % 2];
+    g.beginPath(); g.arc(0, 0, 7.6, 0, TAU); g.fillStyle = css(col); g.fill();
+    g.beginPath(); g.arc(0, 0, 7.6, Math.PI * 0.15, Math.PI * 0.85); line(g, pal.shade, 1.6, 0.9);
+    g.beginPath(); g.arc(-1.8, -2.4, 2.4, Math.PI, Math.PI * 1.5); line(g, [255, 255, 255], 1.1, 0.9);
+    g.restore();
+  });
+  // цветные бусины между облачками (радужные или звёздочки)
+  walk(30, 40, (x, y, ang, i) => {
+    g.save(); g.translate(x, y); g.rotate(ang); g.translate(0, 0);
+    if (variant === 1) { g.beginPath(); g.arc(0, -0.5, 2.8, 0, TAU); g.fillStyle = css(RAINBOW[i % 6]); g.fill(); line(g, ink, 0.8, 0.8); }
+    else sparkle(g, 0, 0, 4, RAINBOW[i % 6], 0.95);
+    g.restore();
   });
   // уголки: мини-солнышки / луны
   const cc = x0 + band / 2 + 2;
@@ -216,8 +232,7 @@ function compSun(g, rng, pal, B) {
   // угловые радуги
   for (const [sx, sy] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) {
     g.save(); g.beginPath(); g.rect(B.x, B.y, B.w, B.h); g.clip();
-    g.translate(cx + sx * B.w / 2, cy + sy * B.h / 2); g.scale(sx, sy);
-    g.rotate(0);
+    g.translate(cx + sx * B.w / 2, cy + sy * B.h / 2); g.scale(-sx, -sy);
     // четверть-радуга вокруг угла
     RAINBOW.forEach((c, i) => { g.beginPath(); g.arc(0, 0, 76 - i * 10, 0, Math.PI / 2); g.lineWidth = 10.8; g.lineCap = 'butt'; g.strokeStyle = css(pal.night ? darken(c, 0.15) : c); g.stroke(); });
     g.restore();
@@ -231,7 +246,7 @@ function compSun(g, rng, pal, B) {
   const ring = [];
   for (let i = 0; i < N; i++) { const a = (i / N) * TAU - Math.PI / 2; ring.push([cx + Math.cos(a) * 92, cy + Math.sin(a) * 178, i]); }
   ring.sort((a, b) => a[1] - b[1]);
-  for (const [x, y, i] of ring) { g.save(); g.translate(x, y + 18); cloud(g, 64, pal, i % 3, i % 3 === 0, i % 2 ? null : mix(pal.cloud, pal.shade, 0.15)); g.restore(); }
+  for (const [x, y, i] of ring) { g.save(); g.translate(x, y + 18); cloud(g, 78, pal, i % 3, i % 3 === 0, i % 2 ? null : mix(pal.cloud, pal.shade, 0.15)); g.restore(); }
   // центральный диск
   g.save(); g.translate(cx, cy);
   g.beginPath(); g.arc(0, 0, 104, 0, TAU); g.fillStyle = css(pal.cloud, 0.28); g.fill();

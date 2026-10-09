@@ -1,96 +1,42 @@
-# AIGame
+# Чистый ворс
 
-**A game designed, built, tested, and evolved entirely by AI agents.**
+Мобильная игра про мойку ковров. Нарисована, озвучена и написана ИИ-агентами: люди задали рамки и разрешения, весь код, графика, звук, тексты и тесты сделаны агентами.
 
-AIGame is an experiment in fully autonomous game development. Humans set the starting conditions and the guardrails. Everything after that is produced by AI agents, with no hand-written game code: the concept, design documents, code, art, audio, levels, balancing, testing, and release notes.
+**Играть:** после включения GitHub Pages игра публикуется из папки `game/` (workflow `Pages`). Локально: `npm run serve` и открыть адрес в браузере телефона или эмуляции.
 
-> Status: 🌱 **Day 0.** The repository has just been created. Nothing has been generated yet.
+## О чём игра
+- Берёшь заказ у клиента, готовишь набор (инструменты у тебя в собственности, средства покупаешь перед мойкой), моешь ковёр пальцем за отведённое время.
+- Три фазы с выбором инструмента: **пылесос** → **средство** (пена настаивается и окрашивается) → **смыв** (вода или пар). Порядок и инструмент влияют на скорость и расходы.
+- 8 типов грязи, 19 стилей ковров (8 культур и 12 абсурдных тем), 10 районов-сезонов, 60 сюжетных заказов и бесконечная доска побочных. Каждый пятый ковёр района абсурдный, с особым свойством.
+- Монеты и репутация. Репутация спасает заказ, когда время вышло. Красивые посты в ленте фирмы растят подписчиков и открывают районы.
+- Управление: жесты по фазам, наклон и встряска (с кнопками-заменителями), вибро-отклик (Android в приоритете).
+- Русский интерфейс, работает офлайн (PWA), сохранения локальные с экспортом в файл.
 
----
+Подробности замысла: [docs/GDD.md](docs/GDD.md). Лор и схемы: [docs/lore.md](docs/lore.md), [docs/content-schema.md](docs/content-schema.md). Решения: [docs/decisions](docs/decisions). Статус разработки: [docs/STATUS.md](docs/STATUS.md).
 
-## Goals
-
-- **Full autonomy.** AI agents own the whole lifecycle: ideation → design → implementation → testing → iteration → release.
-- **Playable output.** The goal is a game people can actually play and enjoy, not a tech demo.
-- **Transparent process.** Every decision, plan, and change is recorded in the repo so anyone can follow how the game evolved.
-- **Self-improvement.** Agents playtest their own builds, collect feedback, and plan the next iteration.
-
-## Non-goals
-
-- Humans writing gameplay code or hand-drawing assets.
-- Picking a genre in advance. The agents choose and justify it.
-
----
-
-## How it works (planned)
-
+## Структура
 ```
-┌────────────┐   ┌────────────┐   ┌──────────────┐   ┌────────────┐
-│  Designer  │──▶│  Planner   │──▶│  Developer   │──▶│   Tester   │
-│ concept,   │   │ milestones,│   │ code, assets,│   │ playtests, │
-│ GDD, rules │   │ tasks      │   │ levels       │   │ bug reports│
-└────────────┘   └────────────┘   └──────────────┘   └─────┬──────┘
-      ▲                                                    │
-      └──────────────── feedback & next iteration ◀────────┘
+game/            игра как статический сайт (index.html, css/, js/, icons/, sw.js)
+  js/core/       состояние, экономика, прогрессия, адаптивная сложность
+  js/wash/       симуляция мойки, генерация грязи, отрисовка, частицы
+  js/carpet/     конвейер рендера ковров и стили орнаментов
+  js/ui/         экраны
+  js/audio/      звук, музыка, вибро
+  js/data/       снаряжение, сюжет (story/), находки, достижения, тексты
+  js/sim/        бот-игрок для балансировки
+tools/           калибровка баланса, контактные листы ковров, сервер, иконки
+tests/           юнит-тесты (node:test) и E2E (Playwright)
+docs/            GDD, план, статус, ADR
 ```
 
-| Role | Responsibility |
-|------|----------------|
-| **Designer** | Comes up with the game concept and maintains the Game Design Document (GDD). |
-| **Planner** | Breaks the design into milestones and small, verifiable tasks. |
-| **Developer** | Implements features, generates assets, and writes tests. |
-| **Tester** | Runs the build, plays it automatically, and reports bugs and balance issues. |
-| **Reviewer** | Reviews changes for quality and consistency before they are merged. |
-
-The roles, tools, and orchestration will themselves be defined and refined by the agents as the project grows.
-
----
-
-## Human involvement
-
-Humans only:
-
-1. Define the initial constraints and guardrails (budget, platform, content policy).
-2. Provide infrastructure (repository, compute, API keys).
-3. Watch, and step in only if something breaks the guardrails.
-
-Every human intervention is logged so the level of autonomy stays measurable.
-
----
-
-## Repository layout (planned)
-
+## Разработка
 ```
-AIGame/
-├── docs/          # Game design document, decisions (ADRs), iteration logs
-├── game/          # Game source code
-├── assets/        # Generated art, audio, and other resources
-├── agents/        # Agent definitions, prompts, and orchestration
-├── tests/         # Automated and AI-driven playtests
-└── README.md
+npm test              юнит-тесты логики
+npm run e2e           прохождение заказа в мобильном Chromium (нужен playwright)
+npm run calibrate     пересчёт времени и стоимости заказов ботом
+npm run precache      список файлов для офлайна (обязателен перед коммитом)
+node tools/contact.mjs persian,turkish 6 out.png   контактный лист ковров
 ```
 
----
-
-## Roadmap
-
-- [ ] Define guardrails and the agent setup
-- [ ] Agents pick the genre, platform, and tech stack
-- [ ] First Game Design Document
-- [ ] First playable prototype
-- [ ] Automated playtesting loop
-- [ ] Public playable build
-
----
-
-## Getting started
-
-There is nothing to run yet. Setup and run instructions will appear here once the agents have chosen a tech stack and produced a first build.
-
-## Contributing
-
-This project is AI-driven by design. Ideas, observations, and bug reports are welcome as issues, and the agents may pick them up as input for future iterations.
-
-## License
-
-To be decided.
+## Лицензия
+Не указана: проект для личного использования.
