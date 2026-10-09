@@ -6,7 +6,7 @@ import { WashView, TOTAL_H } from '../wash/view.js';
 import { CW } from '../carpet/render.js';
 import { DIRT, PHASES, PHASE_NAMES, ALL_PRODUCTS, ALL_TOOLS, ALL_FILTERS } from '../data/gear.js';
 import { QUIRK_INFO, THRESHOLD } from '../core/progress.js';
-import { timeMul } from '../core/adaptive.js';
+import { timeMul, failStreak } from '../core/adaptive.js';
 import { bonus, rescueCost, RESCUE_SECONDS } from '../core/economy.js';
 import { FIND_BY_ID } from '../core/state.js';
 import { CHALLENGES } from '../data/workshop.js';
@@ -36,7 +36,9 @@ export function createEngine(state, order, challenges) {
   const ids = challenges.map((c) => c.id);
   const limit = order.limit * timeMul(state) * (ids.includes('c_rush') ? 0.7 : 1);
   const eng = new WashEngine({ limit: Math.round(limit), kit, quirks: order.quirks, seed: order.seed, finds, heavyExtra: ids.includes('c_heavy') ? 1.5 : 1 });
-  fillDirt(eng, order.profile, order.seed);
+  const ease = failStreak(state) >= 4 ? 0.75 : 1; // режим поддержки: ковёр чуть легче
+  const profile = ease === 1 ? order.profile : { layers: order.profile.layers.map((l) => ({ ...l, cover: l.cover * ease, amt: l.amt * (0.9 + 0.1 * ease) })) };
+  fillDirt(eng, profile, order.seed);
   return { eng, kit };
 }
 
@@ -73,7 +75,7 @@ export function runWash({ state, order, challenges = [], root, onQuit }) {
         icon(ic), h('span', null, PHASE_NAMES[ph] === 'Смыв' && tool.steam ? 'Пар' : PHASE_NAMES[ph]), h('small', null, tool.name.replace(/ [«"].*$/, '')));
       phaseBtns[ph] = b; phasesEl.appendChild(b);
     }
-    const prodRow = h('div', { class: 'prodrow' });
+    const prodRow = h('div', { class: 'prodrow', style: { visibility: 'hidden' } });
     const gFilter = gauge('filter', 'Фильтр'), gProd = gauge('spray', 'Средство'), gWater = gauge(eng.rin.steam ? 'steam' : 'drop', eng.rin.steam ? 'Пар' : 'Вода');
     const gaugeRow = h('div', { class: 'gauge' }, gFilter.el, gProd.el, gWater.el);
     const dock = h('div', { class: 'dock' }, phasesEl, prodRow, gaugeRow);
@@ -112,6 +114,8 @@ export function runWash({ state, order, challenges = [], root, onQuit }) {
     ro.observe(stage);
 
     // состояние
+    const warnedEmpty = {};
+    let filterWarned = false;
     let paused = false, ended = false, rescues = 0, rescued = false, started = false, warned = false, repSpent = 0;
     let last = performance.now(), tAll = 0, hudT = 0, musicT = 0;
     let down = false, px = 0, py = 0, ex = 0, ey = 0, prevEx = 0, prevEy = 0, held = 0, speed = 0, usedVac = false;
@@ -123,7 +127,7 @@ export function runWash({ state, order, challenges = [], root, onQuit }) {
       if (ph === 'vacuum' && noVac) return;
       phase = ph; audio.ui('tab'); haptics.event('tap');
       for (const k of PHASES) phaseBtns[k].classList.toggle('on', k === ph);
-      prodRow.style.display = ph === 'apply' ? 'flex' : 'none';
+      prodRow.style.visibility = ph === 'apply' ? 'visible' : 'hidden';
       refreshDock();
     }
     function refreshProducts() {
@@ -250,7 +254,7 @@ export function runWash({ state, order, challenges = [], root, onQuit }) {
     const HINTS = [
       { id: 'h_start', when: () => started === false && tAll > 0.6, text: () => noVac ? TEXTS.tutorial.apply : TEXTS.tutorial.vacuum },
       { id: 'h_apply', when: () => started && !noVac && phase === 'vacuum' && dryLeft() < 0.35, text: () => 'Сухое почти убрано. Переходи к «Средству»: ' + TEXTS.tutorial.apply },
-      { id: 'h_rinse', when: () => matureFoam() > 60, text: () => 'Пена окрасилась. ' + TEXTS.tutorial.rinse },
+      { id: 'h_rinse', when: () => matureFoam() > 140 && phase !== 'vacuum', text: () => 'Пена окрасилась. ' + TEXTS.tutorial.rinse },
       { id: 'h_time', when: () => tAll > 20, text: () => TEXTS.tutorial.time },
       { id: 'h_find', when: () => eng.finds.some((f) => f.revealed && !f.collected), text: () => 'Что-то блестит! Нажми на находку, чтобы забрать.' },
     ];
@@ -275,13 +279,14 @@ export function runWash({ state, order, challenges = [], root, onQuit }) {
       const collected = eng.finds.filter((f) => f.collected).map((f) => f.id);
       const auto = eng.collectAllRevealed().map((f) => f.id);
       const before = beforeSnap;
+      let afterSnap = null; try { afterSnap = view.snapshotNow(); } catch (e) { /* без кадра */ }
       const left = { products: { ...eng.stock.products }, water: Math.max(0, state.inventory.water - eng.used.water), steam: eng.stock.steam };
       document.body.classList.remove('in-wash'); screen.remove();
       resolve({
         abandoned, clean: eng.cleanPct, leftFrac: eng.timeLeft / eng.limit, rescued, rescues,
         finds: [...collected, ...auto], timeSec: eng.time, usedVacuum: eng.stats.strokes.vacuum > 1.5,
         leftover: left, filterUsed: eng.vac && kit._filterId && eng.filterLoad > 0.5 ? kit._filterId : null,
-        appeal: (eng.app.appeal || 0) + (eng.rin.appeal || 0) + (eng.vac.appeal || 0), before, limit: eng.limit,
+        appeal: (eng.app.appeal || 0) + (eng.rin.appeal || 0) + (eng.vac.appeal || 0), before, after: afterSnap, limit: eng.limit,
       });
     }
     function timeUp() {
@@ -328,7 +333,7 @@ export function runWash({ state, order, challenges = [], root, onQuit }) {
       paused = true; stopTool();
       const ov = h('div', { class: 'overlay' }, h('div', { class: 'sheet', style: { alignSelf: 'center', borderRadius: '24px', maxWidth: '88%', margin: '0 auto' } },
         h('div', { class: 'body', style: { textAlign: 'center', padding: '20px' } }, h('h3', null, 'Сдать ковёр?'),
-          h('p', null, `Сейчас отмыто ${Math.round(eng.cleanPct)}%. Остаток времени пойдёт в бонус.`),
+          eng.cleanPct < THRESHOLD ? h('p', { style: { color: 'var(--terra-d)', fontWeight: 800 } }, `Отмыто ${Math.round(eng.cleanPct)}%, а нужно ${THRESHOLD}%. Заказ будет провален.`) : h('p', null, `Сейчас отмыто ${Math.round(eng.cleanPct)}%. Остаток времени пойдёт в бонус.`),
           h('button', { class: 'btn block', onClick: () => { ov.remove(); finish(); } }, 'Сдать'),
           h('div', { style: { height: '8px' } }),
           h('button', { class: 'btn ghost block', onClick: () => { ov.remove(); paused = false; last = performance.now(); } }, 'Ещё поработаю'))));
@@ -383,6 +388,10 @@ export function runWash({ state, order, challenges = [], root, onQuit }) {
           if (res) {
             const kind = toolKind();
             if (!toolOn || toolOn !== kind) { stopTool(); audio.toolStart(kind); toolOn = kind; }
+            if (res.empty && !warnedEmpty[kind]) {
+              warnedEmpty[kind] = true; haptics.event('warn');
+              toast(kind === 'apply' ? 'Это средство закончилось. Выбери другое внизу.' : kind === 'steam' ? 'Пар закончился. Нужен ещё пар из магазина.' : 'Вода закончилась. Струя еле капает.', 'bad');
+            } else if (!res.empty) warnedEmpty[kind] = false;
             const inten = res.empty ? 0.1 : clamp(res.rate * 3, 0.1, 1);
             const spd = clamp(speed / 80, 0, 1);
             audio.toolUpdate(kind, inten, spd);
@@ -390,7 +399,7 @@ export function runWash({ state, order, challenges = [], root, onQuit }) {
             if (phase === 'vacuum') usedVac = true;
           }
         }
-        eng.tick(dt);
+        if (started) eng.tick(dt);
         for (const ev of eng.drainEvents()) {
           if (ev.type === 'sparkle') { view.addEvents([ev]); audio.sfx('sparkle'); haptics.event('sparkle'); }
           else if (ev.type === 'found') { audio.sfx('find'); haptics.event('find'); toast('Что-то блестит под пылью!', 'good'); }
@@ -406,6 +415,7 @@ export function runWash({ state, order, challenges = [], root, onQuit }) {
           meterFill.style.width = eng.cleanPct + '%'; meterTxt.textContent = Math.round(eng.cleanPct) + '%';
           if (Math.floor(left) === 10 && !warned) { warned = true; haptics.event('warn'); }
           refreshDock();
+          if (eng.filter && !filterWarned && eng.filterLoad > eng.filter.cap * eng.vac.filterCap) { filterWarned = true; toast('Фильтр забился: пылесос слабеет. Нужен новый перед следующей мойкой.', 'bad'); }
           if (phase === 'apply') refreshProducts();
         }
         if (Math.floor(tAll * 2) % 4 === 0 && hudT === 0) updateScan();

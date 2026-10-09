@@ -3,7 +3,7 @@
 import * as ST from '../game/js/core/state.js';
 import { SEASONS, storyOrders, seasonDone, seasonUnlocked, FOLLOWER_REQ } from '../game/js/core/progress.js';
 import { autoBuy } from '../game/js/core/advice.js';
-import { timeMul } from '../game/js/core/adaptive.js';
+import { timeMul, failStreak } from '../game/js/core/adaptive.js';
 import { bonus, rescueCost, RESCUE_SECONDS, lvl } from '../game/js/core/economy.js';
 import { VACUUMS, APPLICATORS, RINSERS, MODS, ALL_FILTERS } from '../game/js/data/gear.js';
 import { WORKSHOP } from '../game/js/data/workshop.js';
@@ -55,13 +55,15 @@ function runOrder(order) {
   const kit = { vacuum: s.equipped.vacuum, applicator: s.equipped.applicator, rinse: s.equipped.rinse, mods: s.equipped.mods, bonus: bonus(s), stock: { products, water: s.inventory.water, steam: s.inventory.steam, filter } };
   let limit = Math.round(order.limit * timeMul(s));
   let rescued = false, grace = 0;
-  let r = runBot({ profile: order.profile, seed: order.seed, kit, limit, speed: SPEED, quirks: order.quirks, finds: order.finds, target: 98 });
+  const ease = failStreak(s) >= 4 ? 0.75 : 1;
+  const prof = ease === 1 ? order.profile : { layers: order.profile.layers.map((l) => ({ ...l, cover: l.cover * ease, amt: l.amt * (0.9 + 0.1 * ease) })) };
+  let r = runBot({ profile: prof, seed: order.seed, kit, limit, speed: SPEED, quirks: order.quirks, finds: order.finds, target: 98 });
   // спасение: если не дотянули до порога и хватает репутации
   let uses = 0;
   while (r.clean < 70 && s.rep >= rescueCost(order, uses) && uses < 2) {
     s.rep -= rescueCost(order, uses); uses++; rescued = true; rescues++;
     limit += RESCUE_SECONDS * uses;
-    r = runBot({ profile: order.profile, seed: order.seed, kit: { ...kit, stock: { products: { ...products }, water: s.inventory.water, steam: s.inventory.steam, filter } }, limit, speed: SPEED, quirks: order.quirks, finds: order.finds, target: 98 });
+    r = runBot({ profile: prof, seed: order.seed, kit: { ...kit, stock: { products: { ...products }, water: s.inventory.water, steam: s.inventory.steam, filter } }, limit, speed: SPEED, quirks: order.quirks, finds: order.finds, target: 98 });
   }
   const used = r.used;
   const left = { products: {}, water: Math.max(0, s.inventory.water - used.water), steam: Math.max(0, s.inventory.steam - used.steam) };
@@ -80,7 +82,7 @@ function runOrder(order) {
 }
 
 let guard = 0;
-while (!(seasonDone(s, 10)) && guard++ < 900) {
+while (!(seasonDone(s, 10)) && guard++ < 330) {
   const sid = s.season;
   const story = storyOrders(sid).filter((o) => !(s.progress.done[o.id]?.stars > 0));
   if (story.length) { runOrder(story[0]); continue; }

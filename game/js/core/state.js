@@ -81,7 +81,8 @@ export function buyTool(state, id) {
   const t = ALL_TOOLS[id];
   state.coins -= t.price; state.rep -= t.rep || 0;
   state.owned.tools.push(id);
-  state.equipped[toolCategory(id) === 'vacuum' ? 'vacuum' : toolCategory(id) === 'apply' ? 'applicator' : 'rinse'] = id;
+  const key = toolCategory(id) === 'vacuum' ? 'vacuum' : toolCategory(id) === 'apply' ? 'applicator' : 'rinse';
+  if (t.radius >= (ALL_TOOLS[state.equipped[key]]?.radius ?? 0)) state.equipped[key] = id;
   return { ok: true };
 }
 export function equipTool(state, id) {
@@ -196,7 +197,8 @@ export function applyResult(state, order, result, challenges = []) {
   state.rep += out.rep;
   state.followers += out.followers;
   state.stats.peakCoins = Math.max(state.stats.peakCoins, state.coins);
-  state.stats.jobs++;
+  state.stats.attempts = (state.stats.attempts || 0) + 1;
+  if (out.stars > 0) state.stats.jobs++;
   if (out.stars === 3) { state.stats.stars3++; if (!result.rescued) state.stats.perfect++; }
   if (out.stars > 0 && result.leftFrac >= 0.5) state.stats.fast++;
   if (out.stars > 0 && !result.usedVacuum) state.stats.noVacuum++;
@@ -222,9 +224,9 @@ export function applyResult(state, order, result, challenges = []) {
   }
   recordResult(state, { clean: result.clean, leftFrac: result.leftFrac, rescued: result.rescued });
   // пост в ленте
-  const rng = new RNG(hashString(order.id + ':' + state.stats.jobs));
+  const rng = new RNG(hashString(order.id + ':' + state.stats.attempts));
   const post = {
-    id: 'p' + state.stats.jobs, orderId: order.id, kind: order.kind, title: order.title, style: order.style, seed: order.seed,
+    id: 'p' + state.stats.attempts, orderId: order.id, kind: order.kind, title: order.title, style: order.style, seed: order.seed,
     season: order.season, idx: order.idx, stars: out.stars, clean: Math.round(result.clean), caption: order.caption || '',
     client: order.client.name, quirks: order.quirks.map((q) => q.id), finds: order.finds, profile: order.profile,
     comments: makeComments(rng, out.stars, order.absurd), likes: Math.round(out.followers * 3.4 + rng.int(3, 20)), t: Date.now(),

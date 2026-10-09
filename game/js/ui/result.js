@@ -50,7 +50,7 @@ export function showResult({ order, challenges, res }) {
     const clientLines = stars >= 2 ? order.success : stars === 1 ? order.partial : order.fail;
     const clientLine = clientLines && clientLines.length ? rng.pick(clientLines) : '';
 
-    const after = renderCarpet({ style: order.style, seed: order.seed }, 1);
+    const after = res.after || renderCarpet({ style: order.style, seed: order.seed }, 1);
     const cmp = res.before ? compareEl(res.before, after) : null;
 
     const lines = h('div', null,
@@ -70,6 +70,7 @@ export function showResult({ order, challenges, res }) {
       h('div', { class: 'res' },
         h('h2', { style: { margin: 0 } }, stars === 0 ? 'Не получилось' : stars === 3 ? 'Блестяще!' : 'Заказ выполнен'),
         h('div', { class: 'bigstars' }, [1, 2, 3].map((i) => h('span', { class: i <= stars ? 'on' : 'off', style: { animationDelay: i * 0.18 + 's' } }, icon('star')))),
+        h('div', { class: 'muted' }, '★ от 70% · ★★ от 90% · ★★★ от 98% чистоты'),
         h('div', { class: 'quote' }, avatarEl(order.client.avatar, 48), h('div', null, h('b', null, order.client.name), h('div', null, clientLine ? '«' + clientLine + '»' : ''))),
         cmp, h('div', { class: 'card' }, lines), findsEl,
         h('div', { class: 'quote' }, icon('cat', 'big'), h('div', null, h('b', null, 'Ворсик'), h('div', null, catLine))),

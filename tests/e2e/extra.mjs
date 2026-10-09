@@ -119,6 +119,7 @@ for (const q of QUIRKS) {
   await toHub(pg);
   await pg.evaluate(() => { window.__game.state.rep = 5; });
   await startOrder(pg, 0);
+  await scribble(pg, 1);
   await pg.evaluate(() => { const e = window.__wash.eng; e.time = e.limit - 0.3; });
   await pg.waitForSelector('.overlay .btn.gold', { timeout: 5000 });
   await pg.screenshot({ path: `${out}/40-timeup.png` });

@@ -19,7 +19,7 @@ export function bonus(state) {
   return { rate: 1 + [0, 0, 0.1, 0.2][L], dry: 1 + 0.6 * lvl(state, 'dryer') };
 }
 
-const TOOL_TIER_SEASON = [1, 1, 3, 5, 7];
+const TOOL_TIER_SEASON = [1, 1, 2, 3, 5];
 export function toolUnlockSeason(phase, id) {
   const list = phase === 'vacuum' ? VACUUMS : phase === 'apply' ? APPLICATORS : RINSERS;
   const i = list.findIndex((t) => t.id === id);

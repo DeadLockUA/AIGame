@@ -10,13 +10,13 @@ import { CHALLENGES } from '../data/workshop.js';
 import { THRESHOLD, QUIRK_INFO } from '../core/progress.js';
 import * as ST from '../core/state.js';
 import { caps, unitPrice, productAvailable, filterAvailable, deskMul } from '../core/economy.js';
-import { timeMul } from '../core/adaptive.js';
+import { timeMul, failStreak } from '../core/adaptive.js';
 import { fmt, fmtTime } from '../util.js';
 import { dirtDot, dirtName, rerender } from './hub.js';
 import { runWash } from './wash.js';
 import { showResult } from './result.js';
 import { sensors } from './sensors.js';
-import { recommend, autoBuy } from '../core/advice.js';
+import { recommend, autoBuy, ensureStarter } from '../core/advice.js';
 
 export function openPrep(order) {
   const { state, root } = A;
@@ -44,8 +44,9 @@ export function openPrep(order) {
     body.appendChild(h('div', { class: 'quote' }, avatarEl(order.client.avatar, 52), h('div', null, h('b', null, order.client.name), h('div', { class: 'muted' }, order.client.role || ''), h('div', { style: { marginTop: '4px' } }, '«' + (order.intro[0] || 'Отмойте, пожалуйста.') + '»'))));
     // условия
     body.appendChild(h('div', { class: 'card' },
-      h('div', { class: 'row sb' }, h('div', { class: 'row' }, thumb({ style: order.style, seed: order.seed }, 'thumb'), h('div', null, h('div', { class: 'chips' }, order.dirtFocus.map((t) => h('span', { class: 'chip' }, dirtDot(t), dirtName(t)))), h('div', { class: 'muted', style: { marginTop: '6px' } }, `Нужно отмыть хотя бы ${THRESHOLD}%`))),
+      h('div', { class: 'row sb' }, h('div', { class: 'row' }, thumb({ style: order.style, seed: order.seed }, 'thumb'), h('div', null, h('div', { class: 'chips' }, order.dirtFocus.map((t) => h('span', { class: 'chip' }, dirtDot(t), dirtName(t)))), h('div', { class: 'muted', style: { marginTop: '6px' } }, `Нужно отмыть хотя бы ${THRESHOLD}%, три звезды от 98%`))),
         h('div', { style: { textAlign: 'right' } }, h('div', { class: 'price' }, icon('coin'), '~' + fmt(order.pay * payMul)), h('div', { class: 'row', style: { justifyContent: 'flex-end' } }, icon('clock'), h('b', null, fmtTime(limit)))))));
+    if (failStreak(state) >= 4) body.appendChild(h('div', { class: 'card', style: { background: '#e6f6ef' } }, h('b', null, 'Режим поддержки'), h('div', { class: 'muted' }, 'Несколько неудач подряд: ковёр чуть чище, времени больше. Это временно.')));
     if (order.quirks.length) {
       const q = QUIRK_INFO[order.quirks[0].id];
       body.appendChild(h('div', { class: 'card', style: { background: '#f3e6fb' } }, h('span', { class: 'badge' }, 'АБСУРД'), ' ', h('b', null, q.name), h('div', { class: 'muted' }, q.desc)));
@@ -76,7 +77,7 @@ export function openPrep(order) {
       const step = kind === 'water' || kind === 'steam' ? 20 : 1;
       lines.push(h('div', { class: 'card' }, h('div', { class: 'row' },
         h('i', { style: { width: '20px', height: '20px', borderRadius: '50%', background: color, border: '2px solid rgba(0,0,0,.15)', flex: 'none' } }),
-        h('div', { class: 'grow' }, h('b', null, name), need ? h('div', { class: 'muted' }, `на заказ примерно ${need}` + (have >= need ? ' (хватает)' : '')) : null),
+        h('div', { class: 'grow' }, h('b', null, name), need ? h('div', { class: have < need * 0.7 ? 'chip warn' : 'muted' }, `на заказ примерно ${need}` + (have >= need ? ' (хватает)' : have < need * 0.7 ? ': маловато' : '')) : null),
         h('div', { class: 'stepper' }, h('button', { 'aria-label': 'Меньше', onClick: () => { toast('Остатки хранятся на складе'); } }, icon('minus')), h('b', null, String(Math.round(have * 10) / 10)), h('button', { 'aria-label': 'Больше', onClick: () => buy(step) }, icon('plus'))),
         h('div', { class: 'price', style: { minWidth: '52px', justifyContent: 'flex-end' } }, icon('coin'), price.toFixed(price < 1 ? 2 : 1)))));
     };
@@ -93,7 +94,7 @@ export function openPrep(order) {
     // вызовы
     body.appendChild(h('div', { class: 'h2' }, 'Вызовы', h('small', null, 'по желанию: больше наград')));
     CHALLENGES.forEach((c) => body.appendChild(h('div', { class: 'card tap row', style: { borderColor: chosen.has(c.id) ? 'var(--teal)' : '' }, onClick: () => { chosen.has(c.id) ? chosen.delete(c.id) : chosen.add(c.id); audio.ui('tick'); render(); } },
-      h('div', { class: 'switch' + (chosen.has(c.id) ? ' on' : '') }), h('div', { class: 'grow' }, h('b', null, c.name), h('div', { class: 'muted' }, c.desc)), h('div', null, h('div', { class: 'price' }, '×' + c.pay), c.rep ? h('div', { class: 'price' }, icon('rep'), '+' + c.rep) : null))));
+      h('div', { class: 'switch' + (chosen.has(c.id) ? ' on' : '') }), h('div', { class: 'grow' }, h('b', null, c.name), h('div', { class: 'muted' }, c.desc)), h('div', null, h('div', { class: 'price' }, 'оплата ×' + c.pay), c.rep ? h('div', { class: 'price' }, icon('rep'), '+' + c.rep) : null))));
 
     const noVacOk = true;
     const foot = h('div', { class: 'foot' },
@@ -110,6 +111,8 @@ export function openPrep(order) {
   }
 
   async function start(chs) {
+    const gift = ensureStarter(state);
+    if (gift) { toast(gift, 'good'); A.save(); A.refreshTop(); }
     if (!Object.values(state.inventory.products).some((n) => n > 0.05)) { toast('Нет средств. Купи хоть что-нибудь, хотя бы эко-гель.', 'bad'); audio.ui('error'); return; }
     close(); audio.ui('success'); haptics.event('tap');
     if (!state.settings.sensorsAsked && sensors.available) {

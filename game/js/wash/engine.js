@@ -99,7 +99,7 @@ export class WashEngine {
     }
     let f = 0;
     for (let i = 0; i < GN; i++) f += this.foam[i];
-    return s + f * 0.12;
+    return s + f * 0.06;
   }
 
   cellDirt(i) {

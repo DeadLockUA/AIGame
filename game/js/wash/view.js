@@ -121,6 +121,19 @@ export class WashView {
     return c;
   }
 
+  /** Текущий вид ковра (с остатками грязи, без пены). */
+  snapshotNow() {
+    this.updateLayers();
+    const c = document.createElement('canvas'); c.width = this.carpet.width; c.height = this.carpet.height;
+    const g = c.getContext('2d');
+    g.drawImage(this.carpet, 0, 0);
+    const keep = [this.sx, this.sy];
+    this.sx = c.width / CW; this.sy = c.height / TOTAL_H;
+    this.drawBody(g, false, false);
+    [this.sx, this.sy] = keep;
+    return c;
+  }
+
   addEvents(events) {
     for (const ev of events) {
       if (ev.type === 'sparkle') this.fx.sparkle(this.gx(ev.x), this.gy(ev.y));

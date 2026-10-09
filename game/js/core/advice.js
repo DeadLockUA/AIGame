@@ -49,3 +49,23 @@ export function autoBuy(state, order) {
   if (!Object.values(state.inventory.filters).some((n) => n > 0) && best) need('filter', best.id, 1);
   return { spent, ok };
 }
+
+/** Аварийный набор: если нет средств и денег на них, Ворсик находит заначку. Возвращает текст или null. */
+export function ensureStarter(state) {
+  const have = Object.values(state.inventory.products).reduce((a, b) => a + b, 0);
+  const rin = ALL_TOOLS[state.equipped.rinse];
+  let msg = null;
+  if (have < 1 && state.coins < 6) {
+    state.inventory.products.p_eco = (state.inventory.products.p_eco || 0) + 6;
+    msg = 'Ворсик нашёл заначку деда Ефима: 6 порций эко-геля.';
+  }
+  if (!rin.steam && state.inventory.water < 20 && state.coins < 6) {
+    state.inventory.water += 60;
+    msg = (msg ? msg + ' ' : '') + 'И немного воды.';
+  }
+  if (rin.steam && state.inventory.steam < 10 && state.coins < 10) {
+    state.inventory.steam += 30;
+    msg = (msg ? msg + ' ' : '') + 'И немного пара.';
+  }
+  return msg;
+}

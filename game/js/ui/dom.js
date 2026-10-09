@@ -31,7 +31,7 @@ export function toast(text, kind = '') {
   const box = document.getElementById('toasts');
   const t = h('div', { class: 'toast ' + kind }, text);
   box.appendChild(t);
-  setTimeout(() => t.classList.add('out'), 2400);
-  setTimeout(() => t.remove(), 2900);
+  setTimeout(() => t.classList.add('out'), 2200);
+  setTimeout(() => t.remove(), 2700);
 }
 export { icon, iconHtml, ICONS } from './icons.js';
