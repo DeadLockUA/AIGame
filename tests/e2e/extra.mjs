@@ -67,11 +67,13 @@ async function scribble(pg, rows = 5, y0 = 0.12) {
   for (const idx of [1, 2]) { await pg.locator('.seg button').nth(idx).click(); await pg.waitForTimeout(250); await pg.screenshot({ path: `${out}/20-shop-${idx}.png` }); }
   await pg.click('.tab[data-tab=workshop]'); await pg.waitForTimeout(250); await pg.screenshot({ path: `${out}/21-workshop.png` });
   await pg.click('.tab[data-tab=more]'); await pg.waitForTimeout(250);
-  await pg.locator('.card.tap').nth(0).click(); await pg.waitForSelector('.sheet'); await pg.waitForTimeout(250); await pg.screenshot({ path: `${out}/22-achievements.png` });
+  await pg.locator('.card.tap').nth(0).click(); await pg.waitForSelector('.sheet'); await pg.waitForTimeout(250); await pg.screenshot({ path: `${out}/25-howto.png` });
   await pg.click('.sheet .xbtn');
-  await pg.locator('.card.tap').nth(1).click(); await pg.waitForSelector('.sheet'); await pg.waitForTimeout(200); await pg.screenshot({ path: `${out}/23-collection.png` });
+  await pg.locator('.card.tap').nth(1).click(); await pg.waitForSelector('.sheet'); await pg.waitForTimeout(250); await pg.screenshot({ path: `${out}/22-achievements.png` });
   await pg.click('.sheet .xbtn');
-  await pg.locator('.card.tap').nth(2).click(); await pg.waitForSelector('.sheet'); await pg.waitForTimeout(200); await pg.screenshot({ path: `${out}/24-settings.png` });
+  await pg.locator('.card.tap').nth(2).click(); await pg.waitForSelector('.sheet'); await pg.waitForTimeout(200); await pg.screenshot({ path: `${out}/23-collection.png` });
+  await pg.click('.sheet .xbtn');
+  await pg.locator('.card.tap').nth(3).click(); await pg.waitForSelector('.sheet'); await pg.waitForTimeout(200); await pg.screenshot({ path: `${out}/24-settings.png` });
   await pg.click('.sheet .xbtn');
   ok(errors.length === 0, 'экраны хаба без ошибок' + (errors.length ? ': ' + errors[0] : ''));
   await ctx.close();

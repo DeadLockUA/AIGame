@@ -16,7 +16,7 @@ import { caps, unitPrice, productAvailable, filterAvailable, toolUnlockSeason, m
 import { fmt } from '../util.js';
 import { openPrep } from './prep.js';
 import { postCard } from './feed.js';
-import { openSettings, openAchievements, openCollection, openAbout } from './more.js';
+import { openSettings, openAchievements, openCollection, openAbout, openHowTo } from './more.js';
 import { showSeasonStory } from './story.js';
 
 const BANNERS = [
@@ -279,6 +279,7 @@ function tabMore() {
   const done = Object.keys(state.achievements).length;
   const row = (ic, title, sub, fn) => h('div', { class: 'card tap row', onClick: () => { audio.ui('open'); fn(); } }, h('div', { class: 'badgebox', style: { width: '44px', height: '44px', borderRadius: '14px', display: 'grid', placeItems: 'center', background: 'var(--paper2)' } }, icon(ic)), h('div', { class: 'grow' }, h('b', null, title), h('div', { class: 'muted' }, sub)), icon('arrow'));
   body.appendChild(h('div', { class: 'h2' }, 'Ещё'));
+  body.appendChild(row('info', 'Как играть', 'Коротко о фазах мойки, звёздах и наклоне', openHowTo));
   body.appendChild(row('trophy', 'Достижения', `${done} из ${ACH.length}`, openAchievements));
   body.appendChild(row('find', 'Коллекция находок', `${Object.keys(state.finds).length} из ${FINDS.length}`, openCollection));
   body.appendChild(row('gear', 'Настройки', 'Звук, вибро, датчики, сохранение', openSettings));
