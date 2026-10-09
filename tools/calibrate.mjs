@@ -3,14 +3,9 @@ import { writeFileSync } from 'node:fs';
 import { runBot } from '../game/js/sim/bot.js';
 import { storyOrders, refKit, SEASONS } from '../game/js/core/progress.js';
 import { PRODUCTS, CONSUMABLE_PRICES } from '../game/js/data/gear.js';
+import { stockFor } from './calibrate-lib.mjs';
 
-const need = { p_eco: 1, p_soap: 1, p_degreaser: 2, p_enzyme: 3, p_antimold: 5, p_oxy: 6 };
 const price = Object.fromEntries(PRODUCTS.map((p) => [p.id, p.price]));
-export function stockFor(season, big = 80) {
-  const products = {};
-  for (const p of PRODUCTS) if ((need[p.id] ?? 1) <= season) products[p.id] = big;
-  return { products, water: 600, steam: 300, filter: season >= 4 ? 'f_hepa' : season >= 2 ? 'f_coal' : 'f_paper' };
-}
 const out = {};
 const rows = [];
 for (const s of SEASONS) {

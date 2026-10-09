@@ -4,12 +4,12 @@ import { CW, CH, css, mix, darken, lighten, pickPalette, star, mirrorX } from '.
 const TAU = Math.PI * 2;
 
 const PALS = [
-  { top: [255, 190, 208], bot: [255, 236, 204], cloud: [255, 255, 255], shade: [238, 204, 232], ink: [196, 130, 176], sun: [255, 214, 120], border: [244, 148, 182], border2: [255, 226, 238], edge: [190, 100, 140], night: false },
-  { top: [112, 184, 250], bot: [214, 238, 255], cloud: [255, 255, 255], shade: [188, 214, 246], ink: [96, 142, 214], sun: [255, 226, 108], border: [88, 148, 226], border2: [226, 242, 255], edge: [56, 100, 176], night: false },
-  { top: [150, 120, 214], bot: [255, 194, 154], cloud: [255, 232, 232], shade: [232, 172, 202], ink: [150, 96, 160], sun: [255, 172, 100], border: [122, 92, 184], border2: [255, 214, 196], edge: [90, 62, 140], night: false },
-  { top: [140, 224, 214], bot: [255, 246, 216], cloud: [255, 255, 255], shade: [186, 226, 226], ink: [80, 160, 160], sun: [255, 210, 108], border: [88, 190, 180], border2: [232, 252, 244], edge: [50, 130, 126], night: false },
-  { top: [176, 166, 240], bot: [252, 218, 238], cloud: [255, 252, 255], shade: [214, 196, 240], ink: [136, 110, 200], sun: [255, 220, 130], border: [142, 120, 212], border2: [240, 230, 255], edge: [100, 78, 170], night: false },
-  { top: [38, 48, 108], bot: [128, 112, 194], cloud: [214, 212, 248], shade: [140, 136, 196], ink: [80, 80, 150], sun: [255, 244, 200], border: [34, 40, 92], border2: [150, 150, 220], edge: [20, 26, 62], night: true },
+  { top: [255, 190, 208], bot: [255, 236, 204], cloud: [255, 255, 255], shade: [238, 204, 232], ink: [196, 130, 176], sun: [255, 214, 120], border: [244, 148, 182], border2: [255, 226, 238], edge: [190, 100, 140] },
+  { top: [112, 184, 250], bot: [214, 238, 255], cloud: [255, 255, 255], shade: [188, 214, 246], ink: [96, 142, 214], sun: [255, 226, 108], border: [88, 148, 226], border2: [226, 242, 255], edge: [56, 100, 176] },
+  { top: [150, 120, 214], bot: [255, 194, 154], cloud: [255, 232, 232], shade: [232, 172, 202], ink: [150, 96, 160], sun: [255, 172, 100], border: [122, 92, 184], border2: [255, 214, 196], edge: [90, 62, 140] },
+  { top: [140, 224, 214], bot: [255, 246, 216], cloud: [255, 255, 255], shade: [186, 226, 226], ink: [80, 160, 160], sun: [255, 210, 108], border: [88, 190, 180], border2: [232, 252, 244], edge: [50, 130, 126] },
+  { top: [176, 166, 240], bot: [252, 218, 238], cloud: [255, 252, 255], shade: [214, 196, 240], ink: [136, 110, 200], sun: [255, 220, 130], border: [142, 120, 212], border2: [240, 230, 255], edge: [100, 78, 170] },
+  { top: [38, 48, 108], bot: [128, 112, 194], cloud: [214, 212, 248], shade: [140, 136, 196], ink: [80, 80, 150], sun: [255, 244, 200], border: [34, 40, 92], border2: [150, 150, 220], edge: [20, 26, 62] },
 ];
 
 const RAINBOW = [[255, 112, 120], [255, 168, 92], [255, 224, 104], [128, 214, 134], [100, 180, 240], [172, 132, 232]];
@@ -45,7 +45,6 @@ function cloud(g, w, pal, shape = 0, face = false, tint = null) {
   // блик
   const [x0, r0] = SHAPES[shape][1];
   g.beginPath(); g.arc(x0 * w, -r0 * w * 0.95, r0 * w * 0.72, Math.PI * 1.1, Math.PI * 1.45); line(g, [255, 255, 255], lw * 1.4, 0.85);
-  cloudPath(g, w, shape); line(g, mix(pal.ink, pal.cloud, 0.2), lw, 0.9);
   if (face) {
     const s = w * 0.07, y = -w * 0.15;
     for (const sx of [-1, 1]) { g.beginPath(); g.arc(sx * w * 0.12, y, s * 0.55, 0, TAU); g.fillStyle = css(darken(pal.ink, 0.35)); g.fill(); g.beginPath(); g.arc(sx * w * 0.12 - s * 0.15, y - s * 0.2, s * 0.18, 0, TAU); g.fillStyle = '#fff'; g.fill(); g.beginPath(); g.ellipse(sx * w * 0.22, y + s * 0.9, s * 0.7, s * 0.42, 0, 0, TAU); g.fillStyle = 'rgba(255,130,160,0.55)'; g.fill(); }

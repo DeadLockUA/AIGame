@@ -1,0 +1,16 @@
+{
+  "name": "chisty-vors",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Чистый ворс: мобильная игра про мойку ковров",
+  "scripts": {
+    "test": "node --test tests/unit/*.test.mjs",
+    "e2e": "node tests/e2e/run.mjs",
+    "calibrate": "node tools/calibrate.mjs",
+    "precache": "node tools/build-precache.mjs",
+    "status": "node tools/status.mjs",
+    "serve": "node tools/serve.mjs"
+  },
+  "devDependencies": { "playwright": "^1.56.0" }
+}
