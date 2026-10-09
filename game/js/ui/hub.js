@@ -134,7 +134,7 @@ function tabOrders() {
     }
   }
   body.appendChild(h('div', { class: 'h2' }, 'Заказы района', h('small', null, 'сюжетные')));
-  orders.forEach((o) => body.appendChild(orderCard(o, state)));
+  orders.forEach((o, i) => { const c = orderCard(o, state); if (i === 0 && !(state.stats.attempts > 0) && sid === 1) c.classList.add('pulse'); body.appendChild(c); });
   if (sid === state.season) {
     body.appendChild(h('div', { class: 'h2' }, 'Доска заказов', h('small', null, `${boardSlots(state)} места`)));
     if (!state.board.side.length) ST.ensureBoard(state);

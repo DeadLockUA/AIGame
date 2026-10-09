@@ -258,3 +258,6 @@ body.in-wash #toasts { top: calc(var(--sat) + 118px); }
 .stepper button { width: 44px; height: 44px; } .xbtn { width: 44px; height: 44px; }
 .btn.sm { min-height: 44px; } .hud .hb { width: 44px; height: 44px; } .prod { min-height: 40px; }
 .pill { cursor: pointer; }
+
+.card.pulse { animation: pulsering 1.6s ease-in-out infinite; border-color: var(--terra); }
+@keyframes pulsering { 0%, 100% { box-shadow: 0 0 0 0 rgba(217,100,74,.45); } 50% { box-shadow: 0 0 0 9px rgba(217,100,74,0); } }
