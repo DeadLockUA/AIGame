@@ -8,7 +8,7 @@ const PALS = [
   { check: [40, 98, 170], white: [246, 246, 240], field: [250, 232, 160], field2: [236, 210, 120], trim: [20, 52, 100], edge: [24, 56, 104] },
   { check: [214, 70, 30], white: [252, 240, 220], field: [64, 56, 66], field2: [80, 70, 82], trim: [110, 36, 16], edge: [120, 40, 18] },
   { check: [190, 40, 70], white: [250, 238, 232], field: [170, 118, 70], field2: [148, 98, 56], trim: [96, 20, 38], edge: [100, 22, 40] },
-  { check: [226, 150, 30], white: [252, 244, 220], field: [184, 52, 46], field2: [164, 40, 38], trim: [130, 78, 12], edge: [136, 84, 14] },
+  { check: [226, 150, 30], white: [252, 244, 220], field: [46, 96, 64], field2: [60, 114, 78], trim: [130, 78, 12], edge: [136, 84, 14] },
 ];
 
 const L = (c, a) => css(c, a);
@@ -43,7 +43,8 @@ function olive(g, s) {
   g.lineWidth = s * 0.14; g.strokeStyle = L([90, 96, 70]); g.stroke();
   circ(g, 0, 0, s * 0.38); g.fillStyle = L([214, 150, 90], 0.9); g.fill();
 }
-function basil(g, s, c = [58, 140, 60]) {
+function basil(g, s) {
+  const c = [58, 140, 60];
   g.save();
   petalPath(g, s * 2, s * 0.95);
   g.translate(0, s);
@@ -237,8 +238,8 @@ function wholePizza(g, x, y, r, seed, o, rot = 0) {
 
 /* ---------- россыпь на поле ---------- */
 const SCAT = [
-  { f: tomato, r: 12 }, { f: mushroomWhole, r: 12 }, { f: basil, r: 10, big: true }, { f: chili, r: 11 },
-  { f: garlic, r: 10 }, { f: olive, r: 6 }, { f: pepperRing, r: 9 },
+  { f: tomato, r: 17 }, { f: mushroomWhole, r: 16 }, { f: basil, r: 12, big: true }, { f: chili, r: 15 },
+  { f: garlic, r: 14 }, { f: olive, r: 8 }, { f: pepperRing, r: 12 }, { f: tomato, r: 15 },
 ];
 
 function scatter(g, rg, area, obstacles, count, kinds) {
@@ -357,34 +358,34 @@ export default {
     const kinds = lr.pick(TOPPING_SETS);
 
     if (variant === 0) {
-      const r = 116;
+      const r = 120;
       obs.push({ x: cx, y: cy, r: r + 4 });
-      scatter(g, lr, area, obs, 26, sc);
+      scatter(g, lr, area, obs, 20, sc);
       cornerTomatoes(g, lr);
       wholePizza(g, cx, cy, r, seed, mk(kinds), lr.range(0, 6.28));
     } else if (variant === 1) {
-      const r = 100, n = lr.pick([6, 8]);
+      const r = 104, n = lr.pick([6, 8]);
       const rot = lr.range(0, 6.28);
       const pull = lr.int(0, n - 1);
       obs.push({ x: cx, y: cy, r: r + 36 });
-      scatter(g, lr, area, obs, 26, sc);
+      scatter(g, lr, area, obs, 20, sc);
       cornerTomatoes(g, lr);
-      slicedPizza(g, cx, cy, r, seed, mk(kinds), n, 5, rot, pull);
+      slicedPizza(g, cx, cy, r, seed, mk(kinds), n, 9, rot, pull);
     } else if (variant === 2) {
       const r = 90;
       const y1 = 158, y2 = 392;
       obs.push({ x: cx, y: y1, r: r + 4 }, { x: cx, y: y2, r: r + 22 });
-      scatter(g, lr, area, obs, 22, sc);
+      scatter(g, lr, area, obs, 20, sc);
       cornerTomatoes(g, lr);
       wholePizza(g, cx, y1, r, seed, mk(kinds), lr.range(0, 6.28));
-      slicedPizza(g, cx, y2, r, seed + 7, mk(lr.pick(TOPPING_SETS)), 6, 4, lr.range(0, 6.28), lr.int(0, 5));
+      slicedPizza(g, cx, y2, r, seed + 7, mk(lr.pick(TOPPING_SETS)), 6, 7, lr.range(0, 6.28), lr.int(0, 5));
     } else {
       const r = 63;
       const pos = [[cx - 71, 150], [cx + 71, 150 + 0], [cx - 71, 390], [cx + 71, 390]];
       for (const [x, y] of pos) obs.push({ x, y, r: r + 4 });
       obs.push({ x: cx, y: cy, r: 26 });
       const sets = lr.shuffle(TOPPING_SETS);
-      scatter(g, lr, area, obs, 22, sc);
+      scatter(g, lr, area, obs, 20, sc);
       cornerTomatoes(g, lr);
       pos.forEach(([x, y], i) => wholePizza(g, x, y, r, seed + i * 31, mk(sets[i % sets.length]), lr.range(0, 6.28)));
       // центральный клубок из базилика и помидора

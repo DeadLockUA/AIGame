@@ -74,8 +74,8 @@ export function makeProfile(d, focus, avail, rng) {
 
 export function quirkParams(id, u) {
   switch (id) {
-    case 'regrow': return { id, every: 3.4 - 1.4 * u, size: 5, amount: 0.55, type: 'mud' };
-    case 'ghosts': return { id, every: 6.5 - 2.5 * u, size: 6, types: ['dust', 'mud', 'stain'] };
+    case 'regrow': return { id, every: 6.5 - 2.5 * u, size: 4, amount: 0.5, type: 'mud' };
+    case 'ghosts': return { id, every: 9.5 - 3.5 * u, size: 5, types: ['dust', 'mud', 'stain'] };
     case 'dark': return { id };
     case 'sway': return { id, amp: 0.06 + 0.04 * u, speed: 0.9 };
     case 'slippery': return { id, lag: 0.16 };
@@ -88,9 +88,9 @@ export function quirkParams(id, u) {
 
 export function refKit(season) {
   const t = Math.min(4, Math.floor((season - 1) / 2));
-  const V = ['v_mouse', 'v_slot', 'v_fox', 'v_cyclone', 'v_hippo'];
-  const A = ['a_spray', 'a_sponge', 'a_foam', 'a_vortex', 'a_mist'];
-  const R = ['r_can', 'r_hose', 'r_storm', 'r_hose', 'r_storm'];
+  const V = ['v_mouse', 'v_fox', 'v_cyclone', 'v_cyclone', 'v_hippo'];
+  const A = ['a_spray', 'a_foam', 'a_vortex', 'a_mist', 'a_mist'];
+  const R = ['r_can', 'r_hose', 'r_hose', 'r_storm', 'r_storm'];
   return { vacuum: V[t], applicator: A[t], rinse: R[t] };
 }
 
