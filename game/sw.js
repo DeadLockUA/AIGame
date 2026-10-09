@@ -1,19 +1,19 @@
 // Service worker: офлайн-работа. Список файлов лежит в precache.json (генерируется tools/build-precache.mjs).
 const PREFIX = 'chisty-vors-';
+const VERSION = 'c5f62b4f30'; // подставляется tools/build-precache.mjs
+const CACHE = PREFIX + VERSION;
 self.addEventListener('install', (e) => {
   e.waitUntil((async () => {
     const res = await fetch('precache.json', { cache: 'no-store' });
-    const { version, files } = await res.json();
-    const cache = await caches.open(PREFIX + version);
+    const { files } = await res.json();
+    const cache = await caches.open(CACHE);
     await cache.addAll(files.map((f) => new Request(f, { cache: 'reload' })));
     self.skipWaiting();
   })());
 });
 self.addEventListener('activate', (e) => {
   e.waitUntil((async () => {
-    const res = await fetch('precache.json', { cache: 'no-store' }).catch(() => null);
-    const cur = res ? PREFIX + (await res.json()).version : null;
-    for (const k of await caches.keys()) if (k.startsWith(PREFIX) && k !== cur) await caches.delete(k);
+    for (const k of await caches.keys()) if (k.startsWith(PREFIX) && k !== CACHE) await caches.delete(k);
     await self.clients.claim();
   })());
 });

@@ -6,7 +6,7 @@ import FINDS from '../data/finds.js';
 import TEXTS from '../data/texts.js';
 import { SEASONS, seasonDone, seasonUnlocked, buildSideOrder, FOLLOWER_REQ } from './progress.js';
 import { caps, unitPrice, boardSlots, modSlots, settle, maxSeasonReached, toolUnlockSeason, modsAvailable } from './economy.js';
-import { recordResult } from './adaptive.js';
+import { recordResult, failStreak } from './adaptive.js';
 import { RNG, hashString } from '../util.js';
 
 export const SAVE_VERSION = 1;
@@ -206,13 +206,14 @@ export function applyResult(state, order, result, challenges = []) {
   state.stats.bestNoRescue = Math.max(state.stats.bestNoRescue, state.stats.noRescueStreak);
   for (const f of finds) { state.finds[f.id] = (state.finds[f.id] || 0) + 1; state.stats.finds++; }
   // остатки расходников возвращаются на склад
+  const fin = (v) => (Number.isFinite(v) ? Math.max(0, v) : 0);
   if (result.leftover) {
     const cap = caps(state);
-    for (const [id, v] of Object.entries(result.leftover.products || {})) state.inventory.products[id] = Math.min(cap.products, Math.round(v * 100) / 100);
-    state.inventory.water = Math.min(cap.water, Math.round(result.leftover.water));
-    state.inventory.steam = Math.min(cap.steam, Math.round(result.leftover.steam));
-    if (result.filterUsed) state.inventory.filters[result.filterUsed] = Math.max(0, (state.inventory.filters[result.filterUsed] || 0) - 1);
+    for (const [id, v] of Object.entries(result.leftover.products || {})) state.inventory.products[id] = Math.min(cap.products, Math.round(fin(v) * 100) / 100);
+    state.inventory.water = Math.min(cap.water, Math.round(fin(result.leftover.water)));
+    state.inventory.steam = Math.min(cap.steam, Math.round(fin(result.leftover.steam)));
   }
+  if (result.filterUsed) state.inventory.filters[result.filterUsed] = Math.max(0, (state.inventory.filters[result.filterUsed] || 0) - 1);
   if (order.kind === 'story') {
     const prev = state.progress.done[order.id];
     state.progress.done[order.id] = { stars: Math.max(prev?.stars || 0, out.stars), clean: Math.max(prev?.clean || 0, result.clean) };
@@ -243,6 +244,9 @@ export function applyResult(state, order, result, challenges = []) {
     state.maxSeason = Math.max(state.maxSeason, Math.min(10, state.season));
     out.newSeason = next;
   }
+  // помощь при неудачах: чтобы нельзя было застрять без денег на мыло
+  out.mercy = 0;
+  if (out.stars === 0 && failStreak(state) >= 2 && state.coins < 60) { out.mercy = Math.ceil(60 - state.coins); state.coins += out.mercy; }
   out.unlocked = evalAchievements(state);
   return out;
 }

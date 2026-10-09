@@ -253,8 +253,17 @@ function tabFeed() {
     h('div', { class: 'pstats' }, h('div', null, h('b', null, fmt(state.gallery.length)), h('span', null, 'постов')), h('div', null, h('b', null, fmt(state.followers)), h('span', null, 'подписчиков')), h('div', null, h('b', null, fmt(likes)), h('span', null, 'лайков')))));
   body.appendChild(h('div', { style: { margin: '4px 2px 8px' } }, h('b', null, 'chisty_vors'), h('div', { class: 'muted' }, 'Мойка ковров «Чистый ворс». Пена, пар и красивые узоры. Кот на фото главный.')));
   if (!state.gallery.length) { body.appendChild(h('div', { class: 'empty' }, 'Пока пусто. Отмой первый ковёр, и он появится здесь с фото «до/после».')); return; }
-  state.gallery.slice(0, feedLimit).forEach((p) => body.appendChild(postCard(p)));
-  if (state.gallery.length > feedLimit) body.appendChild(h('button', { class: 'btn ghost block', onClick: () => { feedLimit += 5; renderBody(); } }, 'Показать ещё'));
+  const list = h('div');
+  body.appendChild(list);
+  let shown = 0;
+  const more = h('button', { class: 'btn ghost block', onClick: () => { addPosts(); } }, 'Показать ещё');
+  function addPosts() {
+    state.gallery.slice(shown, shown + 4).forEach((p) => list.appendChild(postCard(p)));
+    shown = Math.min(state.gallery.length, shown + 4);
+    more.style.display = shown < state.gallery.length ? '' : 'none';
+  }
+  body.appendChild(more);
+  addPosts();
 }
 
 // ---------- Прочее ----------

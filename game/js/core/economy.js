@@ -61,9 +61,9 @@ export function settle(state, order, result, challenges = []) {
   for (const c of challenges) { chPay *= c.pay; chRep += c.rep; }
   let base = order.pay * mulDesk * chPay;
   let pay;
-  if (stars === 0) pay = base * 0.4 * (0.5 + 0.5 * clamp(result.clean / THRESHOLD, 0, 1));
+  if (stars === 0) pay = result.clean < 5 ? 0 : base * 0.4 * Math.pow(clamp(result.clean / THRESHOLD, 0, 1), 2);
   else pay = base * (0.62 + 0.38 * clamp((result.clean - THRESHOLD) / (98 - THRESHOLD), 0, 1));
-  const speed = stars > 0 ? base * 0.35 * clamp(result.leftFrac, 0, 1) : 0;
+  const speed = stars > 0 && !result.rescued ? base * 0.35 * clamp(result.leftFrac, 0, 1) : 0;
   const findsCoins = result.finds.reduce((a, f) => a + f.value, 0);
   const findsRep = result.finds.reduce((a, f) => a + (f.rep || 0), 0);
   let rep = findsRep + (stars > 0 ? chRep : 0);

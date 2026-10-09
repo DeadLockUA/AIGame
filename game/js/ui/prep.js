@@ -20,6 +20,7 @@ import { recommend, autoBuy } from '../core/advice.js';
 
 export function openPrep(order) {
   const { state, root } = A;
+  if (root.querySelector('.overlay')) return;
   const chosen = new Set();
   const ov = h('div', { class: 'overlay' });
   const sheet = h('div', { class: 'sheet' });
@@ -37,7 +38,7 @@ export function openPrep(order) {
     const payMul = chs.reduce((a, c) => a * c.pay, 1) * deskMul(state);
     const rec = recommend(order, state);
 
-    const head = h('div', { class: 'head' }, h('h3', null, order.title), h('button', { class: 'xbtn', onClick: close }, icon('close')));
+    const head = h('div', { class: 'head' }, h('h3', null, order.title), h('button', { class: 'xbtn', 'aria-label': 'Закрыть', onClick: close }, icon('close')));
     const body = h('div', { class: 'body' });
     // клиент
     body.appendChild(h('div', { class: 'quote' }, avatarEl(order.client.avatar, 52), h('div', null, h('b', null, order.client.name), h('div', { class: 'muted' }, order.client.role || ''), h('div', { style: { marginTop: '4px' } }, '«' + (order.intro[0] || 'Отмойте, пожалуйста.') + '»'))));
@@ -76,7 +77,7 @@ export function openPrep(order) {
       lines.push(h('div', { class: 'card' }, h('div', { class: 'row' },
         h('i', { style: { width: '20px', height: '20px', borderRadius: '50%', background: color, border: '2px solid rgba(0,0,0,.15)', flex: 'none' } }),
         h('div', { class: 'grow' }, h('b', null, name), need ? h('div', { class: 'muted' }, `на заказ примерно ${need}` + (have >= need ? ' (хватает)' : '')) : null),
-        h('div', { class: 'stepper' }, h('button', { onClick: () => { /* продажа не поддерживается */ toast('Остатки хранятся на складе'); } }, icon('minus')), h('b', null, String(Math.round(have * 10) / 10)), h('button', { onClick: () => buy(step) }, icon('plus'))),
+        h('div', { class: 'stepper' }, h('button', { 'aria-label': 'Меньше', onClick: () => { toast('Остатки хранятся на складе'); } }, icon('minus')), h('b', null, String(Math.round(have * 10) / 10)), h('button', { 'aria-label': 'Больше', onClick: () => buy(step) }, icon('plus'))),
         h('div', { class: 'price', style: { minWidth: '52px', justifyContent: 'flex-end' } }, icon('coin'), price.toFixed(price < 1 ? 2 : 1)))));
     };
     const needProducts = Object.keys(rec.products);

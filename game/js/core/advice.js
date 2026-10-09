@@ -27,7 +27,7 @@ export function recommend(order, state) {
   if (!Object.keys(out).length) out.p_soap = 5;
   const rin = ALL_TOOLS[state.equipped.rinse];
   const steam = rin.steam ? Math.round(30 + order.u * 40) : 0;
-  const water = rin.steam ? 30 : Math.round((90 + order.u * 100) * rin.flow);
+  const water = rin.steam ? 0 : Math.round((90 + order.u * 100) * rin.flow);
   return { products: out, water, steam };
 }
 

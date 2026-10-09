@@ -55,7 +55,8 @@ button:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
 .btn.sm { padding: 8px 14px; min-height: 38px; border-radius: 12px; font-size: .88em; box-shadow: 0 3px 0 rgba(0,0,0,.2); }
 .btn.sm.teal { box-shadow: 0 3px 0 var(--teal-d); } .btn.sm.gold { box-shadow: 0 3px 0 var(--mustard-d); }
 .btn.block { width: 100%; }
-.btn[disabled], .btn.disabled { filter: grayscale(.85); opacity: .55; pointer-events: none; }
+.btn[disabled], .btn.disabled { filter: grayscale(.85); opacity: .55; }
+.btn[disabled] { pointer-events: none; }
 .chip { display: inline-flex; align-items: center; gap: 4px; padding: 2px 9px; border-radius: 999px; font-size: .74em; font-weight: 800; background: var(--paper2); border: 1.5px solid var(--line); white-space: nowrap; }
 .chip i { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
 .chips { display: flex; flex-wrap: wrap; gap: 5px; }
@@ -247,3 +248,8 @@ body.in-wash #toasts { top: calc(var(--sat) + 118px); }
 .credits .statgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; max-width: 360px; margin: 14px 0; }
 .credits .statgrid div { background: rgba(255,250,240,.12); border-radius: 16px; padding: 10px; }
 .credits .statgrid b { display: block; font-size: 1.5em; }
+
+#rotate { display: none; }
+@media (orientation: landscape) and (max-height: 520px) {
+  #rotate { display: grid; position: fixed; inset: 0; z-index: 200; place-items: center; background: var(--cream); font-weight: 900; font-size: 1.3em; text-align: center; padding: 20px; }
+}

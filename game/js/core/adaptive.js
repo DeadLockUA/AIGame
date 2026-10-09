@@ -21,5 +21,16 @@ export function timeMul(state) {
   }
   s /= h.length;
   // s<0 -> больше времени (до 1.2), s>0 -> меньше (до 0.85)
-  return clamp(1 - s * 0.16, 0.85, 1.2);
+  let mul = clamp(1 - s * 0.16, 0.85, 1.2);
+  // режим поддержки: подряд провалы дают ещё немного времени
+  const f = failStreak(state);
+  if (f >= 2) mul = Math.max(mul, f >= 3 ? 1.45 : 1.3);
+  return mul;
+}
+
+export function failStreak(state) {
+  const h = state.adaptive.hist;
+  let n = 0;
+  for (let i = h.length - 1; i >= 0 && h[i].clean < 70; i--) n++;
+  return n;
 }

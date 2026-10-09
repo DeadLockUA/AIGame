@@ -37,6 +37,7 @@ function confetti(root) {
 export function showResult({ order, challenges, res }) {
   return new Promise(async (resolve) => {
     const { state, root } = A;
+   try {
     const out = ST.applyResult(state, order, res, challenges);
     saveState(state);
     A.refreshTop();
@@ -73,13 +74,20 @@ export function showResult({ order, challenges, res }) {
         cmp, h('div', { class: 'card' }, lines), findsEl,
         h('div', { class: 'quote' }, icon('cat', 'big'), h('div', null, h('b', null, 'Ворсик'), h('div', null, catLine))),
         out.unlocked && out.unlocked.length ? h('div', { class: 'card', style: { background: '#fff4d6' } }, h('b', null, 'Достижения!'), out.unlocked.map((a) => h('div', null, '🏆 ' + a.name + ' (+' + a.rewardCoins + ' монет' + (a.rewardRep ? ', +' + a.rewardRep + ' реп.' : '') + ')'))) : null,
+        out.mercy ? h('div', { class: 'card', style: { background: '#e6f6ef' } }, h('b', null, 'Заначка деда Ефима'), h('div', null, `Ворсик нашёл за плинтусом ${out.mercy} монет. Хватит на мыло.`)) : null,
         out.post ? h('div', { class: 'muted' }, 'Пост ушёл в ленту фирмы.') : null),
       h('div', { class: 'foot', style: { padding: '10px 14px calc(var(--sab) + 12px)', borderTop: '2px solid var(--line)', background: 'var(--paper)' } },
-        h('button', { class: 'btn block', onClick: async () => {
+        h('button', { class: 'btn block', onClick: async (ev) => {
+          if (ev.currentTarget.disabled) return;
+          ev.currentTarget.disabled = true;
           screen.remove();
           if (out.seasonDone) { const s = SEASONS[order.season - 1]; await showSeasonStory(s, 'outro'); if (order.season === 10) await showCredits(state); }
           showHub(); resolve();
         } }, 'Дальше')));
     root.appendChild(screen);
+   } catch (err) {
+    console.error(err);
+    showHub(); resolve();
+   }
   });
 }

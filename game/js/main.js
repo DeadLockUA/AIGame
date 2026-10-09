@@ -43,11 +43,12 @@ function boot() {
   applySettings(state);
   titleScreen(state);
   document.addEventListener('visibilitychange', () => {
-    if (document.hidden) { saveState(state); audio.suspend && audio.suspend(); } else audio.resume && audio.resume();
+    if (document.hidden) { saveState(state); audio.suspend && audio.suspend(); }
+    else if (!document.body.classList.contains('in-wash')) audio.resume && audio.resume();
   });
   window.addEventListener('pagehide', () => saveState(state));
   const t0 = Date.now();
-  setInterval(() => { state.playMs = (state.playMs || 0) + 15000; }, 15000);
+  setInterval(() => { if (!document.hidden) state.playMs = (state.playMs || 0) + 15000; }, 15000);
   if ('serviceWorker' in navigator && location.protocol.startsWith('http') && !location.search.includes('nosw')) {
     navigator.serviceWorker.register('sw.js').catch(() => {});
   }

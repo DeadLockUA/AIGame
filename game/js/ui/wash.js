@@ -12,6 +12,7 @@ import { FIND_BY_ID } from '../core/state.js';
 import { CHALLENGES } from '../data/workshop.js';
 import TEXTS from '../data/texts.js';
 import { sensors } from './sensors.js';
+import { A } from './app.js';
 import { audio } from '../audio/audio.js';
 import { haptics } from '../audio/haptics.js';
 import { fmtTime, clamp } from '../util.js';
@@ -91,13 +92,16 @@ export function runWash({ state, order, challenges = [], root, onQuit }) {
     document.body.classList.add('in-wash');
 
     // размеры
-    let view;
+    let view, lastKey = '';
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     function layout() {
       const r = stage.getBoundingClientRect();
       const aspect = CW / TOTAL_H;
       let w = r.width, hgt = w / aspect;
       if (hgt > r.height) { hgt = r.height; w = hgt * aspect; }
+      const key = Math.floor(w) + 'x' + Math.floor(hgt);
+      if (key === lastKey && view) return;
+      lastKey = key;
       canvas.style.width = Math.floor(w) + 'px'; canvas.style.height = Math.floor(hgt) + 'px';
       canvas.width = Math.round(w * dpr); canvas.height = Math.round(hgt * dpr);
       if (!view) view = new WashView(canvas, eng, spec);
@@ -108,7 +112,7 @@ export function runWash({ state, order, challenges = [], root, onQuit }) {
     ro.observe(stage);
 
     // состояние
-    let paused = false, ended = false, rescues = 0, rescued = false, started = false, warned = false;
+    let paused = false, ended = false, rescues = 0, rescued = false, started = false, warned = false, repSpent = 0;
     let last = performance.now(), tAll = 0, hudT = 0, musicT = 0;
     let down = false, px = 0, py = 0, ex = 0, ey = 0, prevEx = 0, prevEy = 0, held = 0, speed = 0, usedVac = false;
     let toolOn = null;
@@ -190,11 +194,14 @@ export function runWash({ state, order, challenges = [], root, onQuit }) {
       if (qid('mirror')) gx = GW - gx;
       return [gx, gy];
     }
+    let activeId = null, lastCx = 0, lastCy = 0;
     canvas.addEventListener('pointerdown', (e) => {
-      if (paused || ended) return;
+      if (paused || ended || (down && activeId !== null && e.pointerId !== activeId)) return;
+      activeId = e.pointerId;
       e.preventDefault(); audio.unlock(); haptics.unlock();
       canvas.setPointerCapture(e.pointerId);
       const [cx, cy] = pt(e);
+      lastCx = cx; lastCy = cy;
       // сбор находки
       for (const f of eng.finds) {
         if (!f.revealed || f.collected) continue;
@@ -208,15 +215,16 @@ export function runWash({ state, order, challenges = [], root, onQuit }) {
       view._cx = cx; view._cy = cy;
     });
     canvas.addEventListener('pointermove', (e) => {
-      if (!down) return;
+      if (!down || e.pointerId !== activeId) return;
       e.preventDefault();
       const [cx, cy] = pt(e);
+      lastCx = cx; lastCy = cy;
       [px, py] = toGridPos(cx, cy);
       view._cx = cx; view._cy = cy;
       view.cursor.x = cx; view.cursor.y = cy;
     });
-    const up = (e) => { down = false; if (view) view.cursor = null; stopTool(); };
-    canvas.addEventListener('pointerup', up); canvas.addEventListener('pointercancel', up);
+    const up = (e) => { if (e && e.pointerId !== undefined && activeId !== null && e.pointerId !== activeId) return; down = false; activeId = null; if (view) view.cursor = null; stopTool(); };
+    canvas.addEventListener('pointerup', up); canvas.addEventListener('pointercancel', up); canvas.addEventListener('lostpointercapture', up);
     canvas.addEventListener('contextmenu', (e) => e.preventDefault());
 
     function curTool() { return phase === 'vacuum' ? eng.vac : phase === 'apply' ? eng.app : eng.rin; }
@@ -261,14 +269,13 @@ export function runWash({ state, order, challenges = [], root, onQuit }) {
     // конец
     function finish(abandoned = false) {
       if (ended) return;
-      ended = true; stopTool(); audio.musicStop(0.8); cancelAnimationFrame(raf); ro.disconnect();
+      ended = true; stopTool(); audio.resume && audio.resume(); audio.musicStop(0.8); cancelAnimationFrame(raf); ro.disconnect();
+      document.removeEventListener('visibilitychange', onVis);
       sensors.setShakeHandler(null);
       const collected = eng.finds.filter((f) => f.collected).map((f) => f.id);
       const auto = eng.collectAllRevealed().map((f) => f.id);
       const before = beforeSnap;
-      const left = { products: { ...eng.stock.products }, water: eng.stock.water / (challenges.some((c) => c.id === 'c_dry') ? 0.5 : 1), steam: eng.stock.steam };
-      // не возвращаем «вернувшуюся» воду выше исходного запаса
-      left.water = Math.min(left.water, state.inventory.water);
+      const left = { products: { ...eng.stock.products }, water: Math.max(0, state.inventory.water - eng.used.water), steam: eng.stock.steam };
       document.body.classList.remove('in-wash'); screen.remove();
       resolve({
         abandoned, clean: eng.cleanPct, leftFrac: eng.timeLeft / eng.limit, rescued, rescues,
@@ -294,7 +301,7 @@ export function runWash({ state, order, challenges = [], root, onQuit }) {
           h('div', { class: 'body', style: { textAlign: 'center', padding: '20px' } },
             h('h3', null, 'Не успели!'), h('p', null, `Отмыто ${Math.round(clean)}%, а нужно хотя бы ${THRESHOLD}%. Можно взять ещё ${RESCUE_SECONDS} секунд за репутацию или сдать как есть.`),
             h('div', { class: 'row', style: { justifyContent: 'center', margin: '8px 0' } }, icon('rep'), h('b', null, ` ${cost}`), h('span', { class: 'muted' }, ` (у тебя ${state.rep})`)),
-            h('button', { class: `btn gold block${can ? '' : ' disabled'}`, onClick: () => { state.rep -= cost; rescues++; rescued = true; eng.addTime(RESCUE_SECONDS); audio.sfx('rescue'); haptics.event('rescue'); close(); paused = false; last = performance.now(); refreshTop(); } }, 'Спасти заказ'),
+            h('button', { class: `btn gold block${can ? '' : ' disabled'}`, onClick: () => { state.rep -= cost; repSpent += cost; rescues++; rescued = true; eng.addTime(RESCUE_SECONDS); audio.sfx('rescue'); haptics.event('rescue'); close(); paused = false; last = performance.now(); refreshTop(); } }, 'Спасти заказ'),
             h('div', { style: { height: '8px' } }),
             h('button', { class: 'btn ghost block', onClick: () => { close(); finish(); } }, 'Сдать как есть'))));
       }
@@ -302,6 +309,8 @@ export function runWash({ state, order, challenges = [], root, onQuit }) {
     }
     function refreshTop() { /* репутация показывается в диалоге */ }
 
+    const onVis = () => { if (document.hidden && !paused && !ended) pauseBtn.click(); };
+    document.addEventListener('visibilitychange', onVis);
     pauseBtn.addEventListener('click', () => {
       if (ended || paused) return;
       paused = true; stopTool(); audio.suspend && audio.suspend();
@@ -326,7 +335,9 @@ export function runWash({ state, order, challenges = [], root, onQuit }) {
       screen.appendChild(ov);
     });
     function abandon() {
-      ended = true; stopTool(); audio.musicStop(0.5); cancelAnimationFrame(raf); ro.disconnect(); sensors.setShakeHandler(null);
+      ended = true; stopTool(); audio.resume && audio.resume(); audio.musicStop(0.5); cancelAnimationFrame(raf); ro.disconnect(); sensors.setShakeHandler(null);
+      document.removeEventListener('visibilitychange', onVis);
+      if (repSpent) { state.rep += repSpent; A.refreshTop(); }
       document.body.classList.remove('in-wash'); screen.remove(); onQuit && onQuit(); resolve({ abandoned: true, quit: true });
     }
 
@@ -354,6 +365,7 @@ export function runWash({ state, order, challenges = [], root, onQuit }) {
         if (nudge.t > 0) { nudge.t -= dt; gx += nudge.x * 0.9; gy += nudge.y * 0.9; }
         if (gx || gy) eng.applyTilt(gx, gy, dt);
         if (down) {
+          if (qid('sway')) [px, py] = toGridPos(lastCx, lastCy);
           // скольжение
           const k = slip ? 1 - Math.exp(-dt / slip.lag) : 1;
           prevEx = ex; prevEy = ey;
@@ -394,6 +406,7 @@ export function runWash({ state, order, challenges = [], root, onQuit }) {
           meterFill.style.width = eng.cleanPct + '%'; meterTxt.textContent = Math.round(eng.cleanPct) + '%';
           if (Math.floor(left) === 10 && !warned) { warned = true; haptics.event('warn'); }
           refreshDock();
+          if (phase === 'apply') refreshProducts();
         }
         if (Math.floor(tAll * 2) % 4 === 0 && hudT === 0) updateScan();
         musicT += dt; if (musicT > 0.5) { musicT = 0; audio.musicSetClean(eng.cleanPct); }

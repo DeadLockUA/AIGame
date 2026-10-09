@@ -15,4 +15,6 @@ const hash = createHash('sha1');
 for (const f of files) { hash.update(f); hash.update(readFileSync(join(root, f))); }
 const out = { version: hash.digest('hex').slice(0, 10), files: ['./', ...files] };
 writeFileSync(join(root, 'precache.json'), JSON.stringify(out));
+const swPath = join(root, 'sw.js');
+writeFileSync(swPath, readFileSync(swPath, 'utf8').replace(/const VERSION = '[^']*';/, `const VERSION = '${out.version}';`));
 console.log('precache', out.version, files.length);

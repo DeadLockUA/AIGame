@@ -16,7 +16,7 @@ function sheet(title, bodyNodes) {
   const ov = h('div', { class: 'overlay' });
   const close = () => ov.remove();
   ov.addEventListener('click', (e) => { if (e.target === ov) close(); });
-  ov.appendChild(h('div', { class: 'sheet' }, h('div', { class: 'head' }, h('h3', null, title), h('button', { class: 'xbtn', onClick: close }, icon('close'))), h('div', { class: 'body' }, bodyNodes)));
+  ov.appendChild(h('div', { class: 'sheet' }, h('div', { class: 'head' }, h('h3', null, title), h('button', { class: 'xbtn', 'aria-label': 'Закрыть', onClick: close }, icon('close'))), h('div', { class: 'body' }, bodyNodes)));
   A.root.appendChild(ov);
   return close;
 }

@@ -88,10 +88,12 @@ test('район открывается после заказов и подпи�
   assert.equal(s.season, 2);
 });
 
-test('адаптивная сложность ограничена ±20%', () => {
+test('адаптивная сложность: ±20% в норме, до 1.45 в режиме поддержки', () => {
   const s = ST.createState();
+  for (let i = 0; i < 6; i++) recordResult(s, { clean: 80, leftFrac: 0, rescued: true });
+  assert.ok(timeMul(s) <= 1.2 && timeMul(s) > 1.05);
   for (let i = 0; i < 6; i++) recordResult(s, { clean: 40, leftFrac: 0, rescued: false });
-  assert.ok(timeMul(s) <= 1.2 && timeMul(s) > 1.1);
+  assert.ok(timeMul(s) <= 1.45 && timeMul(s) >= 1.4);
   for (let i = 0; i < 6; i++) recordResult(s, { clean: 99, leftFrac: 0.8, rescued: false });
   assert.ok(timeMul(s) >= 0.85 && timeMul(s) < 0.95);
 });
@@ -110,4 +112,48 @@ test('контент: достижения и тексты по схеме', () 
 test('сохранение: migrate дополняет недостающие поля', () => {
   const s = ST.migrate({ coins: 7 });
   assert.equal(s.coins, 7); assert.ok(s.settings && s.workshop && s.inventory.products);
+});
+
+import { validate } from '../../game/js/core/storage.js';
+import { failStreak } from '../../game/js/core/adaptive.js';
+
+test('оплата за пустой заказ нулевая, за спасение нет бонуса скорости', () => {
+  const s = ST.createState();
+  const order = storyOrders(1)[0];
+  assert.equal(settle(s, order, { clean: 0, leftFrac: 0.9, finds: [] }).total, 0);
+  assert.ok(settle(s, order, { clean: 40, leftFrac: 0, finds: [] }).total < order.pay * 0.2);
+  const a = settle(s, order, { clean: 95, leftFrac: 0.5, finds: [], rescued: true });
+  const b = settle(s, order, { clean: 95, leftFrac: 0.5, finds: [], rescued: false });
+  assert.equal(a.speed, 0); assert.ok(b.speed > 0);
+});
+
+test('сохранение: валидатор отвергает мусор', () => {
+  assert.throws(() => validate(null)); assert.throws(() => validate({})); assert.throws(() => validate({ coins: 'x' }));
+  assert.throws(() => validate({ coins: 1, gallery: 'x' })); assert.throws(() => validate({ coins: 1, board: { side: 'x' } }));
+  assert.doesNotThrow(() => validate(ST.createState()));
+});
+
+test('помощь при неудачах: время растёт, заначка выдаётся', () => {
+  const s = ST.createState(); ST.ensureBoard(s);
+  const order = storyOrders(1)[0];
+  s.coins = 5;
+  const bad = { clean: 10, leftFrac: 0, finds: [], leftover: { products: { p_soap: 1 }, water: 10, steam: 0 } };
+  ST.applyResult(s, order, bad, []);
+  const out = ST.applyResult(s, storyOrders(1)[1], bad, []);
+  assert.ok(failStreak(s) >= 2);
+  assert.ok(out.mercy > 0 && s.coins >= 60);
+  assert.ok(timeMul(s) >= 1.3);
+});
+
+test('склад: фильтр списывается даже без остатков', () => {
+  const s = ST.createState(); ST.ensureBoard(s);
+  const f0 = s.inventory.filters.f_paper;
+  ST.applyResult(s, storyOrders(1)[0], { clean: 99, leftFrac: 0.3, finds: [], filterUsed: 'f_paper' }, []);
+  assert.equal(s.inventory.filters.f_paper, f0 - 1);
+});
+
+test('NaN в остатках не портит склад', () => {
+  const s = ST.createState(); ST.ensureBoard(s);
+  ST.applyResult(s, storyOrders(1)[0], { clean: 99, leftFrac: 0.3, finds: [], leftover: { products: { p_soap: NaN }, water: NaN, steam: NaN } }, []);
+  assert.equal(s.inventory.products.p_soap, 0); assert.equal(s.inventory.water, 0);
 });
