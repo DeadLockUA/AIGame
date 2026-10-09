@@ -1,0 +1,23 @@
+<!doctype html>
+<meta charset="utf-8">
+<style>body{margin:0;background:#2a2622;font:12px sans-serif;color:#ddd}#g{display:flex;flex-wrap:wrap;gap:10px;padding:10px}figure{margin:0}figure canvas{display:block;width:180px;height:292px}</style>
+<div id="g"></div>
+<script type="module">
+import { renderCarpet } from '/js/carpet/render.js';
+import { STYLES } from '/js/carpet/styles/index.js';
+const q = new URLSearchParams(location.search);
+const only = q.get('style');
+const n = +(q.get('n') || 6);
+const g = document.getElementById('g');
+for (const id of Object.keys(STYLES)) {
+  if (only && !only.split(',').includes(id)) continue;
+  for (let i = 0; i < n; i++) {
+    const f = document.createElement('figure');
+    const c = renderCarpet({ style: id, seed: 1000 + i * 77 }, 1);
+    f.appendChild(c);
+    const cap = document.createElement('figcaption'); cap.textContent = id + ' #' + i; f.appendChild(cap);
+    g.appendChild(f);
+  }
+}
+document.title = 'ready';
+</script>
